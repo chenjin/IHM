@@ -132,15 +132,15 @@
 		    //.style("fill",function(d){return colorScale(d);});
 			.style("fill",function(d){return compute(linear(d));})
 	      heatMap
-	      .on("mouseover",function(){
+	      //.on("mouseover",function(){
 		    
+		  //})
+		  .on("mouseover",function(d){
+			 tooltip.html(d)
+			 .style("left",(d3.event.pageX) +"px")
+			 .style("top",(d3.event.pageY)+"px")
+			 .style("opacity",1.0)
 		  })
-//		  .on("mouseover",function(d){
-//			 tooltip.html(d)
-//			 .style("left",(d3.event.pageX) +"px")
-//			 .style("top",(d3.event.pageY)+"px")
-//			 .style("opacity",1.0)
-//		  })
 		  .on("mouseout",function(){
 		     
 		  })
@@ -225,5 +225,14 @@
                 .attr("width", 200)  
                 .attr("height", 30)  
                 .style("fill","url(#" + linearGradient.attr("id") + ")"); 
-          var text =svg_legend.append("text")				
+          var text_small =svg_legend.append("text")
+              	.attr("class","small")
+                .text("small")
+                .attr("x",100)
+				.attr("y",60)
+		  var text_large =svg_legend.append("text")
+              	.attr("class","large")
+                .text("large")
+                .attr("x",250)
+				.attr("y",60)
 	 </script>
