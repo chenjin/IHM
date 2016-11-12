@@ -146,18 +146,13 @@
 		    //.style("fill",function(d){return colorScale(d);});
 			.style("fill",function(d){return compute(linear(d));})
 	      heatMap
-	      //.on("mouseover",function(){
-		    
-		  //})
 		  .on("mouseover",function(d){
 			 tooltip.html(d)
 			 .style("left",(d3.event.pageX) +"px")
 			 .style("top",(d3.event.pageY)+"px")
 			 .style("opacity",1.0)
 		  })
-		  .on("mouseout",function(){
-		     
-		  })
+		  
 		  
 		  var svg_block =d3.select("#chart").append("svg")
 			 .attr("width", 300)
@@ -165,7 +160,7 @@
 			 .append("g")//在svg内加入一个g，并设置元素g显示位置
 			 .attr("transform","translate("+(margin.left+20)+","+0+")")
 			  
-          //get k non-duplicate random numbers
+          //cluster_block,get k non-duplicate random numbers
           var origin = new Array;
 		  for(var i=0;i<height;i++){
 		      origin[i] = i+1
@@ -211,7 +206,18 @@
 			    return d
 			})
             .style("writing-mode","tb-rl")
+			.on("mouseover",function(d,i){
+			 tooltip.html("cluster"+i)
+			 .style("left",(d3.event.pageX) +"px")
+			 .style("top",(d3.event.pageY)+"px")
+			 .style("opacity",1.0)
+		    })
+			.on("mouseout",function(d,i){
+			 tooltip.html()
+			})
           block.exit().remove();
+		  
+		  
 		  //下方的legend
 		  var svg_legend =d3.select("#legend").append("svg")
 			 .attr("width", 300)
