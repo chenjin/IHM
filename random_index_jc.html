@@ -195,8 +195,13 @@
 			     if(i<cut.length-1) return cut[i+1]-cut[i]
 				 return height-cut[i]
 			})
-            .style("fill", function(d, i){return colors[i];});
-
+            .style("fill", function(d, i){return colors[i];})
+            .on("mouseover",function(d,i){
+			 tooltip.html("cluster"+i)
+			 .style("left",(d3.event.pageX) +"px")
+			 .style("top",(d3.event.pageY)+"px")
+			 .style("opacity",1.0)
+		    })
           block.append("text")
             .attr("class", "mono")
             .text(function(d,i) { return "label:" + i; })
@@ -206,15 +211,7 @@
 			    return d
 			})
             .style("writing-mode","tb-rl")
-			.on("mouseover",function(d,i){
-			 tooltip.html("cluster"+i)
-			 .style("left",(d3.event.pageX) +"px")
-			 .style("top",(d3.event.pageY)+"px")
-			 .style("opacity",1.0)
-		    })
-			.on("mouseout",function(d,i){
-			 tooltip.html()
-			})
+			
           block.exit().remove();
 		  
 		  
