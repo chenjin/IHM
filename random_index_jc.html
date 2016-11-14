@@ -38,6 +38,7 @@
     </style>
     
     <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.5.3/math.min.js"></script>
   </head>
  <body>
  <h1>This is a heatmap example using d3.js</h1>
@@ -62,9 +63,9 @@
 		for(var i=0;i<matrixrow;i++){
 		    data[i]= new Array();
 			for(var j=0;j<matrixcol;j++){
-			    //data[i][j] = Math.floor(Math.random()*100)
-				temp = Math.floor(Math.random()*100)
-				array_data[i*matrixrow+j] =temp
+			    data[i][j] = Math.floor(Math.random()*100)
+				//temp = Math.floor(Math.random()*100)
+				array_data[i*matrixrow+j] =data[i][j]
 			}
 		}
 		
@@ -169,14 +170,46 @@
 			return 0.5 - Math.random() 
 		  })
 		  var cut = origin.slice(0,buckets)
+	      var data_cut = new Array(buckets)
 		  cut = cut.sort(function(a,b){
 		    return a-b
 		  })
+		  
 		  for(var i=cut.length-1;i>0;i--){
 		    cut[i] = cut[i-1]
+			data_cut[i] =Math.floor(cut[i] * matrixrow / heatmapheight)
 		  }
-		  cut[0] =0
-		  console.log(cut)
+          data_cut[0] =0 		  
+ 		  cut[0] =0
+		  for(var i=0;i<cut.length;i++){
+		     console.log(Math.floor(cut[i]*matrixrow/heatmapheight))
+		  }
+		 
+		  var cluster =new Array(data.length)
+		  var row =0,inx = 0
+		  while(row < data.length){
+		     for(row=data_cut[inx];row<data_cut[inx+1];row++){
+			     cluster[row] =inx
+			 }
+			 if(inx+1 < buckets -1){
+			     inx++
+			 }else{
+			     for(row = data_cut[buckets-1];row < data.length;row++){
+			         cluster[row] =buckets-1
+			     } 
+			 }
+		  }
+		  for(var i =0;i < data.length;i++){
+		     console.log(cluster[i])
+		  }
+		  
+		
+		  var estimate = function(cut,data){
+		     for(var row=0; row< data.length; row++){
+			    // console.log(data[row])
+			 }
+		  }
+		  estimate(cut,data)
 		  var block = svg_block.selectAll(".block")
              // .data([0].concat(colorScale.quantiles()), function(d) { return d; });
              .data(cut)
