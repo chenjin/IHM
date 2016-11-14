@@ -205,8 +205,23 @@
 		  
 		
 		  var estimate = function(cluster,data){
+		     var a =new Array(data.length)
+			 var b =new Array(data.length)
 		     for(var row=0; row< data.length; row++){
-			    // console.log(data[row])
+			    for(var other=0;other< data.length;other++){
+				    if(row == other){
+					    continue;
+					}
+					if(cluster[row] == cluster[other]){
+					    console.log(data[row])
+						console.log(data[other])
+					    console.log(math.add(data[row],data[other]))
+					}else{
+					    console.log(data[row])
+						console.log(data[other])
+					    console.log(math.add(data[row],data[other]))
+					}
+				}
 			 }
 		  }
 		  estimate(cluster,data)
