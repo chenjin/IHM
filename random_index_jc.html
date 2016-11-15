@@ -72,13 +72,13 @@
 		var margin = { top: 0, right: 0, bottom: 0, left: 0 },
 		  heatmapwidth = 600,
 		  heatmapheight = 800,
-		  width = heatmapwidth + margin.left + margin.right,        // æ‰€æœ‰æ ¼å­åŒºåŸŸçš„å®½åº¦ï¼Œå³Heatmapçš„å®½åº¦
+		  width = heatmapwidth + margin.left + margin.right,        // ËùÓÐ¸ñ×ÓÇøÓòµÄ¿í¶È£¬¼´HeatmapµÄ¿í¶È
 		  height = heatmapheight + margin.top + margin.bottom,
 		  
-		  gridSize = Math.floor(width / matrixcol),    // æ±‚åœ°æ¿ï¼Œå³åŽ»æŽ‰å°æ•°éƒ¨åˆ†ï¼Œwidthåˆ†æˆ24ä»½
-		  gridSize_h = Math.floor(height / matrixrow),    // æ±‚åœ°æ¿ï¼Œå³åŽ»æŽ‰å°æ•°éƒ¨åˆ†ï¼Œwidthåˆ†æˆ24ä»½
-		  legendElementWidth = gridSize_h * 2,    // åº•ä¸‹é•¿æ¡çš„é•¿åº¦ï¼Œæ˜¯æ ¼å­è¾¹é•¿çš„ä¸¤å€
-		  buckets = 9,        // ä¸€å…±9ç§é¢œè‰²çº§åˆ«
+		  gridSize = Math.floor(width / matrixcol),    // ÇóµØ°å£¬¼´È¥µôÐ¡Êý²¿·Ö£¬width·Ö³É24·Ý
+		  gridSize_h = Math.floor(height / matrixrow),    // ÇóµØ°å£¬¼´È¥µôÐ¡Êý²¿·Ö£¬width·Ö³É24·Ý
+		  legendElementWidth = gridSize_h * 2,    // µ×ÏÂ³¤ÌõµÄ³¤¶È£¬ÊÇ¸ñ×Ó±ß³¤µÄÁ½±¶
+		  buckets = 9,        // Ò»¹²9ÖÖÑÕÉ«¼¶±ð
 		  colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"]; 
 		  // alternatively colorbrewer.YlGnBu[9]
 		  // days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
@@ -88,19 +88,19 @@
 		    .domain([d3.min(array_data),d3.max(array_data)])
 			.range([0,1])
 		  var colorScale =d3.scale.quantile()
-			.domain([d3.min(array_data),buckets-1,d3.max(array_data)])//å®šä¹‰åŸŸ[0,n,æ•°æ®æœ€å¤§å€¼]
-			.range(colors)//å€¼åŸŸ
-		  //è®¾ç½®chartï¼Œsvg
+			.domain([d3.min(array_data),buckets-1,d3.max(array_data)])//¶¨ÒåÓò[0,n,Êý¾Ý×î´óÖµ]
+			.range(colors)//ÖµÓò
+		  //ÉèÖÃchart£¬svg
 		  
 		  var svg =d3.select("#chart").append("svg")
 			 .attr("width",width+margin.left + margin.right)
 			 .attr("height",height +margin.top + margin.bottom)
-			 .append("g")//åœ¨svgå†…åŠ å…¥ä¸€ä¸ªgï¼Œå¹¶è®¾ç½®å…ƒç´ gæ˜¾ç¤ºä½ç½®
+			 .append("g")//ÔÚsvgÄÚ¼ÓÈëÒ»¸ög£¬²¢ÉèÖÃÔªËØgÏÔÊ¾Î»ÖÃ
 			 .attr("transform","translate("+margin.left+","+margin.top+")")
-		  //ç¼–è¾‘nameè¡Œ
+		  //±à¼­nameÐÐ
 		  /*var nameLabels = svg.selectAll(".nameLabel")
 		     .data(data)
-			 .enter()//ä¸ºdataæ¯ä¸€é¡¹åˆ›å»ºä¸€ä¸ª".dayLabel"
+			 .enter()//ÎªdataÃ¿Ò»Ïî´´½¨Ò»¸ö".dayLabel"
 			 .append("text")
 			 .text(function(d,i){return data[i].name;})
 			 .attr("x",0)
@@ -110,7 +110,7 @@
 			 .attr("class",function(d,i){
 			     return ((i>=0 && i<=4)?"nameLabel mono axis axis-workweek":"nameLabel mono axis");
 				 });
-		  //ç¼–è¾‘æµ‹è¯•é¡¹è¡Œ
+		  //±à¼­²âÊÔÏîÐÐ
 		  var testLabels = svg.selectAll(".testLabel")
 		     .data(tests)
 			 .enter()
@@ -126,7 +126,7 @@
 		 */
 		  var heatMap =svg.selectAll(".score")
 		    .data(array_data)
-			.enter()//ä¸ºdataä¸­æ¯ä¸€é¡¹åˆ›å»ºä¸€ä¸ª".score"
+			.enter()//ÎªdataÖÐÃ¿Ò»Ïî´´½¨Ò»¸ö".score"
 			.append("rect")
 			.attr("x",function(d,i){return (i % matrixrow)*gridSize;})
 			.attr("y",function(d,i){return parseInt(i / matrixrow)*gridSize_h;})
@@ -142,7 +142,7 @@
 		 .append("div")
 		 .attr("class","tooltip")
 		 .style("opacity",0.0)
-		 // duration(1000) åœ¨1000nsä¹Ÿå°±æ˜¯1så†…å°†æ ¼å­å›¾ä¸Šè‰²
+		 // duration(1000) ÔÚ1000nsÒ²¾ÍÊÇ1sÄÚ½«¸ñ×ÓÍ¼ÉÏÉ«
 		  heatMap.transition().duration(1)
 		    //.style("fill",function(d){return colorScale(d);});
 			.style("fill",function(d){return compute(linear(d));})
@@ -158,7 +158,7 @@
 		  var svg_block =d3.select("#chart").append("svg")
 			 .attr("width", 300)
 			 .attr("height",height +margin.top + margin.bottom)
-			 .append("g")//åœ¨svgå†…åŠ å…¥ä¸€ä¸ªgï¼Œå¹¶è®¾ç½®å…ƒç´ gæ˜¾ç¤ºä½ç½®
+			 .append("g")//ÔÚsvgÄÚ¼ÓÈëÒ»¸ög£¬²¢ÉèÖÃÔªËØgÏÔÊ¾Î»ÖÃ
 			 .attr("transform","translate("+(margin.left+20)+","+0+")")
 			  
           //cluster_block,get k non-duplicate random numbers
@@ -205,21 +205,30 @@
 		  
 		
 		  var estimate = function(cluster,data){
-		     var a =new Array(data.length)
-			 var b =new Array(data.length)
+		     
 		     for(var row=0; row< data.length; row++){
+			    var a =new Array(data.length)
+				var b =new Array(data.length)
 			    for(var other=0;other< data.length;other++){
 				    if(row == other){
 					    continue;
 					}
+					/*if(row ==0 && other ==54){
+					    var distance =0   
+						var minus_square =math.square(math.add(data[row],math.multiply(data[other],-1)))
+					    minus_square.map(function(value,index,matrix){
+						    distance += value;
+						});	  
+					}*/
+					 var distance =0;
+						math.square(math.add(data[row],math.multiply(data[other],-1)))
+					    .map(function(value,index,matrix){
+						    distance += value;
+						})
 					if(cluster[row] == cluster[other]){
-					    console.log(data[row])
-						console.log(data[other])
-					    console.log(math.add(data[row],data[other]))
+   						a[i] += Math.sqrt(distance)
 					}else{
-					    console.log(data[row])
-						console.log(data[other])
-					    console.log(math.add(data[row],data[other]))
+					    b[i] += Math.sqrt(distance)
 					}
 				}
 			 }
@@ -263,7 +272,7 @@
           block.exit().remove();
 		  
 		  
-		  //ä¸‹æ–¹çš„legend
+		  //ÏÂ·½µÄlegend
 		  var svg_legend =d3.select("#legend").append("svg")
 			 .attr("width", 300)
 			 .attr("height",80)
