@@ -1,9 +1,10 @@
 ï»¿<!DOCTYPE html>
 <meta charset ="utf-8">
 <html>
-    <head>
-<style>
-      rect.bordered {
+  <head>
+    <link rel="stylesheet" href="/style.css" type="text/css" />
+	<style>
+	  rect.bordered {
         stroke: #E6E6E6;
         stroke-width:0px;   
       }
@@ -35,10 +36,10 @@
 		border-radius:5px;
 	  }
 	  box-shadow
-    </style>
-    
-    <script type="text/javascript" src="/d3.v3.min.js"></script>
-	<script src="/math.min.js"></script>
+	</style>
+    <script type="text/javascript" src="/d3.v3.min.js"> </script>
+	<script type="text/javascript" src="/math.min.js"> </script>
+	<script type="text/javascript" src="/index.js"> </script>
   </head>
  <body>
  <h1>This is a heatmap example using d3.js</h1>
@@ -50,8 +51,10 @@
         <stop offset="100%" stop-color="#0FF" />  
     </linearGradient>  
  </defs> 
-	 <script type="text/javascript">
-	    var data = new Array()
+
+ <script type="text/javascript">
+ 
+       var data = new Array()
 		var array_data =[]
 		//var a = d3.rgb(255,255,217)
 		//var b = d3.rgb(8,29,88)
@@ -72,61 +75,32 @@
 		var margin = { top: 0, right: 0, bottom: 0, left: 0 },
 		  heatmapwidth = 600,
 		  heatmapheight = 800,
-		  width = heatmapwidth + margin.left + margin.right,        // ËùÓÐ¸ñ×ÓÇøÓòµÄ¿í¶È£¬¼´HeatmapµÄ¿í¶È
+		  width = heatmapwidth + margin.left + margin.right,        // ?????????Ã¬?Heatmap???
 		  height = heatmapheight + margin.top + margin.bottom,
 		  
-		  gridSize = Math.floor(width / matrixcol),    // ÇóµØ°å£¬¼´È¥µôÐ¡Êý²¿·Ö£¬width·Ö³É24·Ý
-		  gridSize_h = Math.floor(height / matrixrow),    // ÇóµØ°å£¬¼´È¥µôÐ¡Êý²¿·Ö£¬width·Ö³É24·Ý
-		  legendElementWidth = gridSize_h * 2,    // µ×ÏÂ³¤ÌõµÄ³¤¶È£¬ÊÇ¸ñ×Ó±ß³¤µÄÁ½±¶
-		  buckets = 9,        // Ò»¹²9ÖÖÑÕÉ«¼¶±ð
+		  gridSize = Math.floor(width / matrixcol),    // ???Ã¬???Ð¡???Ã¬width??24?
+		  gridSize_h = Math.floor(height / matrixrow),    // ???Ã¬???Ð¡???Ã¬width??24?
+		  legendElementWidth = gridSize_h * 2,    // ???????Ã¬Ë‡?????}?
+		  buckets = 9,        // ??9?????
 		  colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"]; 
-		  // alternatively colorbrewer.YlGnBu[9]
-		  // days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
-		  //times = ["1a", "2a", "3a", "4a", "5a", "6a", "7a", "8a", "9a", "10a", "11a", "12a", "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p", "10p", "11p", "12p"];
-		  //tests = ["G","MIN","PTS","FGM","FGA","FGP","FTM","FTA","FTP","3PM","3PA","3PP","ORB","DRB","TRB","AST","STL","BLK","TO","PF"];
+		 
 		  var linear = d3.scale.linear()
 		    .domain([d3.min(array_data),d3.max(array_data)])
 			.range([0,1])
 		  var colorScale =d3.scale.quantile()
-			.domain([d3.min(array_data),buckets-1,d3.max(array_data)])//¶¨ÒåÓò[0,n,Êý¾Ý×î´óÖµ]
-			.range(colors)//ÖµÓò
-		  //ÉèÖÃchart£¬svg
+			.domain([d3.min(array_data),buckets-1,d3.max(array_data)])//???[0,n,?????]
+			.range(colors)//??
+		  //??chartÃ¬svg
 		  
 		  var svg =d3.select("#chart").append("svg")
 			 .attr("width",width+margin.left + margin.right)
 			 .attr("height",height +margin.top + margin.bottom)
-			 .append("g")//ÔÚsvgÄÚ¼ÓÈëÒ»¸ög£¬²¢ÉèÖÃÔªËØgÏÔÊ¾Î»ÖÃ
+			 .append("g")//?svg?????gÃ¬?????gÐ”?Î»?
 			 .attr("transform","translate("+margin.left+","+margin.top+")")
-		  //±à¼­nameÐÐ
-		  /*var nameLabels = svg.selectAll(".nameLabel")
-		     .data(data)
-			 .enter()//ÎªdataÃ¿Ò»Ïî´´½¨Ò»¸ö".dayLabel"
-			 .append("text")
-			 .text(function(d,i){return data[i].name;})
-			 .attr("x",0)
-			 .attr("y",function(d,i){return i * gridSize;})
-			 .style("text-anchor","end")
-			 .attr("transform","translate(-6,"+gridSize/1.5+")")
-			 .attr("class",function(d,i){
-			     return ((i>=0 && i<=4)?"nameLabel mono axis axis-workweek":"nameLabel mono axis");
-				 });
-		  //±à¼­²âÊÔÏîÐÐ
-		  var testLabels = svg.selectAll(".testLabel")
-		     .data(tests)
-			 .enter()
-			 .append("text")
-			 .text(function(d){return d;})
-			 .attr("x",function(d,i){return i * gridSize;})
-			 .attr("y",0)
-			 .style("text-anchor","middle")
-			 .attr("transform","translate("+gridSize/2 +",-6)")
-			 .attr("class",function(d,i){
-			    return ((i>=7 && i<= 16)?"testLabel mono axis axis-worktime":"testLabel monoaxis");}
-			 );	
-		 */
+		  
 		  var heatMap =svg.selectAll(".score")
 		    .data(array_data)
-			.enter()//ÎªdataÖÐÃ¿Ò»Ïî´´½¨Ò»¸ö".score"
+			.enter()//?data???Ð®????".score"
 			.append("rect")
 			.attr("x",function(d,i){return (i % matrixrow)*gridSize;})
 			.attr("y",function(d,i){return parseInt(i / matrixrow)*gridSize_h;})
@@ -142,7 +116,7 @@
 		 .append("div")
 		 .attr("class","tooltip")
 		 .style("opacity",0.0)
-		 // duration(1000) ÔÚ1000nsÒ²¾ÍÊÇ1sÄÚ½«¸ñ×ÓÍ¼ÉÏÉ«
+		 // duration(1000) ?1000ns??Ë‡1s???????
 		  heatMap.transition().duration(1)
 		    //.style("fill",function(d){return colorScale(d);});
 			.style("fill",function(d){return compute(linear(d));})
@@ -158,7 +132,7 @@
 		  var svg_block =d3.select("#chart").append("svg")
 			 .attr("width", 300)
 			 .attr("height",height +margin.top + margin.bottom)
-			 .append("g")//ÔÚsvgÄÚ¼ÓÈëÒ»¸ög£¬²¢ÉèÖÃÔªËØgÏÔÊ¾Î»ÖÃ
+			 .append("g")//?svg?????gÃ¬?????gÐ”?Î»?
 			 .attr("transform","translate("+(margin.left+20)+","+0+")")
 			  
           //cluster_block,get k non-duplicate random numbers
@@ -209,7 +183,12 @@
 			 b =new Array(data.length),
 			 s =new Array(data.length),
 			 avg_s =0
+
 		     for(var row=0; row< data.length; row++){
+			    a[row]=0
+				b[row]=0
+				s[row]=0
+			    var inside =0,outside=0
 			    for(var other=0;other< data.length;other++){
 				    if(row == other){
 					    continue;
@@ -219,7 +198,7 @@
 					.map(function(value,index,matrix){
 						distance += value;
 					})
-					var inside =0,outside=0
+					
 					if(cluster[row] == cluster[other]){//distance within cluster
    						a[row] += Math.sqrt(distance)
 						inside++
@@ -227,21 +206,24 @@
 					    b[row] += Math.sqrt(distance)
 						outside++
 					}
+					
 				}
-				//console.log(a[row])
-				//console.log(b[row])
+				console.log(inside)
+				console.log(outside)
 				a[row] = a[row] /inside
 				b[row] = b[row] /outside
+				console.log(a[row])
+				console.log(b[row])
 				s[row] = (b[row] -a[row])/Math.max(a[row],b[row])
+				//console.log(Math.max(a[row],b[row]))
 				avg_s += s[row]
-				console.log(avg_s)
+				//console.log(avg_s)
 			 }
 			 avg_s /= data.length 
 			 console.log(avg_s)
 			 return avg_s
 		  }
 		  var avg_s = estimate(cluster,data)
-		  console.log(avg_s)
 		  //block on the right
 		  var block = svg_block.selectAll(".block")
              // .data([0].concat(colorScale.quantiles()), function(d) { return d; });
@@ -282,8 +264,9 @@
           block.exit().remove();
 		  
 		  
-		  //ÏÂ·½µÄlegend
-		  var svg_legend =d3.select("#legend").append("svg")
+		 
+      //???legend
+		 var svg_legend =d3.select("#legend").append("svg")
 			 .attr("width", 300)
 			 .attr("height",80)
 			 .attr("x",50)
@@ -319,4 +302,6 @@
                 .text("large")
                 .attr("x",250)
 				.attr("y",60)
-	 </script>
+ </script> 
+  </body>
+ </html>

@@ -1,0 +1,32 @@
+  rect.bordered {
+        stroke: #E6E6E6;
+        stroke-width:0px;   
+      }
+
+      text.mono {
+        font-size: 9pt;
+        font-family: Consolas, courier;
+        fill: #aaa;
+      }
+
+      text.axis-workweek {
+        fill: #000;
+      }
+
+      text.axis-worktime {
+        fill: #000;
+      }
+	  
+	  .tooltip{
+	    position: absolute;
+		width: 120px;
+		height: auto;
+		text-align: center;
+		font-family:simsun;
+		font-size: 14px;
+		color: white;
+		background-color:black;
+		border-width:2px solid black;
+		border-radius:5px;
+	  }
+	  box-shadow
