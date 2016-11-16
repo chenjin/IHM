@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <meta charset ="utf-8">
 <html>
     <head>
@@ -181,9 +181,9 @@
 		  }
           data_cut[0] =0 		  
  		  cut[0] =0
-		  for(var i=0;i<cut.length;i++){
+		  /*for(var i=0;i<cut.length;i++){
 		     console.log(Math.floor(cut[i]*matrixrow/heatmapheight))
-		  }
+		  }*/
 		 
 		  var cluster =new Array(data.length)
 		  var row =0,inx = 0
@@ -199,17 +199,50 @@
 			     } 
 			 }
 		  }
-		  for(var i =0;i < data.length;i++){
+		  /*for(var i =0;i < data.length;i++){
 		     console.log(cluster[i])
-		  }
+		  }*/
 		  
 		
-		  var estimate = function(cut,data){
+		  var estimate = function(cluster,data){
+		     var a =new Array(data.length),
+			 b =new Array(data.length),
+			 s =new Array(data.length),
+			 avg_s =0
 		     for(var row=0; row< data.length; row++){
-			    // console.log(data[row])
+			    for(var other=0;other< data.length;other++){
+				    if(row == other){
+					    continue;
+					}
+					var distance =0;
+					math.square(math.add(data[row],math.multiply(data[other],-1)))
+					.map(function(value,index,matrix){
+						distance += value;
+					})
+					var inside =0,outside=0
+					if(cluster[row] == cluster[other]){//distance within cluster
+   						a[row] += Math.sqrt(distance)
+						inside++
+					}else{//distance among cluster
+					    b[row] += Math.sqrt(distance)
+						outside++
+					}
+				}
+				//console.log(a[row])
+				//console.log(b[row])
+				a[row] = a[row] /inside
+				b[row] = b[row] /outside
+				s[row] = (b[row] -a[row])/Math.max(a[row],b[row])
+				avg_s += s[row]
+				console.log(avg_s)
 			 }
+			 avg_s /= data.length 
+			 console.log(avg_s)
+			 return avg_s
 		  }
-		  estimate(cut,data)
+		  var avg_s = estimate(cluster,data)
+		  console.log(avg_s)
+		  //block on the right
 		  var block = svg_block.selectAll(".block")
              // .data([0].concat(colorScale.quantiles()), function(d) { return d; });
              .data(cut)
@@ -230,7 +263,8 @@
 			})
             .style("fill", function(d, i){return colors[i];})
             .on("mouseover",function(d,i){
-			 tooltip.html("cluster"+i)
+			 //tooltip.html("cluster"+i)
+			 tooltip.html(avg_s)
 			 .style("left",(d3.event.pageX) +"px")
 			 .style("top",(d3.event.pageY)+"px")
 			 .style("opacity",1.0)
