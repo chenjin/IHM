@@ -1,24 +1,4 @@
-Ôªø<!DOCTYPE html>
-<meta charset ="utf-8">
-<html>
-  <head>
-    <link rel="stylesheet" href="/style.css" type="text/css" />
-    <script type="text/javascript" src="/d3.v3.min.js"> </script>
-	<script type="text/javascript" src="/math.min.js"> </script>
-	<script type="text/javascript" src="/index.js"> </script>
-  </head>
- <body>
- <h1>This is a heatmap example using d3.js</h1>
- <div id="chart" style="WHITE-SPACE:nowrap"></div>
- <div id="legend"></div>
- <defs>  
-    <linearGradient id="myGradient" x1="0%" y1="0%" x2="100%" y2="0%">  
-        <stop offset="0%" stop-color="#F00" />  
-        <stop offset="100%" stop-color="#0FF" />  
-    </linearGradient>  
- </defs> 
- <script type="text/javascript">
-        var data = new Array()
+ var data = new Array()
 		var array_data =[]
 		//var a = d3.rgb(255,255,217)
 		//var b = d3.rgb(8,29,88)
@@ -39,12 +19,12 @@
 		var margin = { top: 0, right: 0, bottom: 0, left: 0 },
 		  heatmapwidth = 600,
 		  heatmapheight = 800,
-		  width = heatmapwidth + margin.left + margin.right,        // ?????????√¨?Heatmap???
+		  width = heatmapwidth + margin.left + margin.right,        // ?????????®¨?Heatmap???
 		  height = heatmapheight + margin.top + margin.bottom,
 		  
-		  gridSize = Math.floor(width / matrixcol),    // ???√¨???–°???√¨width??24?
-		  gridSize_h = Math.floor(height / matrixrow),    // ???√¨???–°???√¨width??24?
-		  legendElementWidth = gridSize_h * 2,    // ???????√¨Àá?????}?
+		  gridSize = Math.floor(width / matrixcol),    // ???®¨???ß≥???®¨width??24?
+		  gridSize_h = Math.floor(height / matrixrow),    // ???®¨???ß≥???®¨width??24?
+		  legendElementWidth = gridSize_h * 2,    // ???????®¨°¶?????}?
 		  buckets = 9,        // ??9?????
 		  colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"]; 
 		 
@@ -54,17 +34,17 @@
 		  var colorScale =d3.scale.quantile()
 			.domain([d3.min(array_data),buckets-1,d3.max(array_data)])//???[0,n,?????]
 			.range(colors)//??
-		  //??chart√¨svg
+		  //??chart®¨svg
 		  
 		  var svg =d3.select("#chart").append("svg")
 			 .attr("width",width+margin.left + margin.right)
 			 .attr("height",height +margin.top + margin.bottom)
-			 .append("g")//?svg?????g√¨?????g–î?Œª?
+			 .append("g")//?svg?????g®¨?????gß•?¶À?
 			 .attr("transform","translate("+margin.left+","+margin.top+")")
 		  
 		  var heatMap =svg.selectAll(".score")
 		    .data(array_data)
-			.enter()//?data???–Æ????".score"
+			.enter()//?data???ß¿????".score"
 			.append("rect")
 			.attr("x",function(d,i){return (i % matrixrow)*gridSize;})
 			.attr("y",function(d,i){return parseInt(i / matrixrow)*gridSize_h;})
@@ -80,7 +60,7 @@
 		 .append("div")
 		 .attr("class","tooltip")
 		 .style("opacity",0.0)
-		 // duration(1000) ?1000ns??Àá1s???????
+		 // duration(1000) ?1000ns??°¶1s???????
 		  heatMap.transition().duration(1)
 		    //.style("fill",function(d){return colorScale(d);});
 			.style("fill",function(d){return compute(linear(d));})
@@ -96,7 +76,7 @@
 		  var svg_block =d3.select("#chart").append("svg")
 			 .attr("width", 300)
 			 .attr("height",height +margin.top + margin.bottom)
-			 .append("g")//?svg?????g√¨?????g–î?Œª?
+			 .append("g")//?svg?????g®¨?????gß•?¶À?
 			 .attr("transform","translate("+(margin.left+20)+","+0+")")
 			  
           //cluster_block,get k non-duplicate random numbers
@@ -234,7 +214,7 @@
 		  
 		 
       //???legend
-		 var svg_legend =d3.select("#legend").append("svg")
+		/* var svg_legend =d3.select("#legend").append("svg")
 			 .attr("width", 300)
 			 .attr("height",80)
 			 .attr("x",50)
@@ -269,10 +249,4 @@
               	.attr("class","large")
                 .text("large")
                 .attr("x",250)
-				.attr("y",60)
- 
- 
- </script>
- 
- </body>
- </html>
+				.attr("y",60)*/
