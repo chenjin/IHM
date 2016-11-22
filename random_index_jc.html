@@ -20,10 +20,8 @@
  <script type="text/javascript">
         var data = new Array()
 		var array_data =[]
-		//var a = d3.rgb(255,255,217)
-		//var b = d3.rgb(8,29,88)
-		var a= d3.rgb(255,0,0)
-		var b= d3.rgb(0,255,0)
+		var a= d3.rgb(0,255,0)
+		var b= d3.rgb(255,0,0)
 		var compute = d3.interpolate(a,b)
 		var matrixrow = 200
 		var matrixcol = 15
@@ -39,12 +37,12 @@
 		var margin = { top: 0, right: 0, bottom: 0, left: 0 },
 		  heatmapwidth = 600,
 		  heatmapheight = 800,
-		  width = heatmapwidth + margin.left + margin.right,        // ?????????Ã¬?Heatmap???
+		  width = heatmapwidth + margin.left + margin.right,        // ?????????¨¬?Heatmap???
 		  height = heatmapheight + margin.top + margin.bottom,
 		  
-		  gridSize = Math.floor(width / matrixcol),    // ???Ã¬???Ð¡???Ã¬width??24?
-		  gridSize_h = Math.floor(height / matrixrow),    // ???Ã¬???Ð¡???Ã¬width??24?
-		  legendElementWidth = gridSize_h * 2,    // ???????Ã¬Ë‡?????}?
+		  gridSize = Math.floor(width / matrixcol),    // ???¨¬???§³???¨¬width??24?
+		  gridSize_h = Math.floor(height / matrixrow),    // ???¨¬???§³???¨¬width??24?
+		  legendElementWidth = gridSize_h * 2,    // ???????¨¬¡¦?????}?
 		  buckets = 9,        // ??9?????
 		  colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"]; 
 		 
@@ -54,17 +52,17 @@
 		  var colorScale =d3.scale.quantile()
 			.domain([d3.min(array_data),buckets-1,d3.max(array_data)])//???[0,n,?????]
 			.range(colors)//??
-		  //??chartÃ¬svg
+		  //??chart¨¬svg
 		  
 		  var svg =d3.select("#chart").append("svg")
 			 .attr("width",width+margin.left + margin.right)
 			 .attr("height",height +margin.top + margin.bottom)
-			 .append("g")//?svg?????gÃ¬?????gÐ”?Î»?
+			 .append("g")//?svg?????g¨¬?????g§¥?¦Ë?
 			 .attr("transform","translate("+margin.left+","+margin.top+")")
 		  
 		  var heatMap =svg.selectAll(".score")
 		    .data(array_data)
-			.enter()//?data???Ð®????".score"
+			.enter()//?data???§À????".score"
 			.append("rect")
 			.attr("x",function(d,i){return (i % matrixrow)*gridSize;})
 			.attr("y",function(d,i){return parseInt(i / matrixrow)*gridSize_h;})
@@ -75,28 +73,28 @@
 			.attr("width",gridSize)
 			.attr("height",gridSize_h)
 			.style("fill","#FFFFFF")
-			;
+			
 		 var tooltip = d3.select("body")
 		 .append("div")
 		 .attr("class","tooltip")
 		 .style("opacity",0.0)
-		 // duration(1000) ?1000ns??Ë‡1s???????
+		 // duration(1000) ?1000ns??¡¦1s???????
 		  heatMap.transition().duration(1)
 		    //.style("fill",function(d){return colorScale(d);});
 			.style("fill",function(d){return compute(linear(d));})
-	      heatMap
+	     /* heatMap
 		  .on("mouseover",function(d){
 			 tooltip.html(d)
 			 .style("left",(d3.event.pageX) +"px")
 			 .style("top",(d3.event.pageY)+"px")
 			 .style("opacity",1.0)
-		  })
+		  })*/
 		  
 		  
 		  var svg_block =d3.select("#chart").append("svg")
 			 .attr("width", 300)
 			 .attr("height",height +margin.top + margin.bottom)
-			 .append("g")//?svg?????gÃ¬?????gÐ”?Î»?
+			 .append("g")//?svg?????g¨¬?????g§¥?¦Ë?
 			 .attr("transform","translate("+(margin.left+20)+","+0+")")
 			  
           //get k non-duplicate random numbers
@@ -112,17 +110,16 @@
 		  cut = cut.sort(function(a,b){
 		    return a-b
 		  })
-		  
+	      
 		  for(var i=cut.length-1;i>0;i--){
 		    cut[i] = cut[i-1]
-			data_cut[i] = Math.floor(cut[i] * matrixrow / heatmapheight)
+			data_cut[i] = Math.floor(cut[i] * matrixrow / heatmapheight)//change from pixel_height scale to data_size scale
 		  }
           data_cut[0] =0 		  
  		  cut[0] =0
 		  /*for(var i=0;i<cut.length;i++){
 		     console.log(Math.floor(cut[i]*matrixrow/heatmapheight))
 		  }*/
-		 
 		  var cluster =new Array(data.length)
 		  var row =0,inx = 0
 		  while(row < data.length){
@@ -141,7 +138,7 @@
 		     console.log(cluster[i])
 		  }*/
 		  
-		
+		  //Sihoutte coefficient
 		  var estimate = function(cluster,data){
 		     var a =new Array(data.length),
 			 b =new Array(data.length),
@@ -199,7 +196,7 @@
           block.enter().append("g")
              .attr("class", "block");
           
-          block.append("rect")
+          var block_rec =block.append("rect")
 		    .attr("x", 0)
 			//.attr("y", function(d, i) { return height /colors.length * i;})
 			.attr("y",function(d,i){
@@ -212,14 +209,63 @@
 				 return height-cut[i]
 			})
             .style("fill", function(d, i){return colors[i];})
-            .on("mouseover",function(d,i){
-			 //tooltip.html("cluster"+i)
-			 tooltip.html(avg_s)
+		  console.log(block_rec.attr("width"))	
+          block_rec.on("mouseover",function(d,i){
+			    svg_block.append("line")
+              	.attr("x1",0)
+                .attr("y1",cut[i])				
+				.attr("x2",block_rec.attr("width"))
+				.attr("y2",cut[i])
+				.attr("stroke","yellow")
+                .attr("stroke-width",5)
+				svg.append("line")
+              	.attr("x1",0)
+                .attr("y1",cut[i])				
+				.attr("x2",width)
+				.attr("y2",cut[i])
+				.attr("stroke","yellow")
+                .attr("stroke-width",2)
+			    if(i < cut.length-1){
+				   svg_block.append("line")
+					.attr("x1",0)
+					.attr("y1",cut[i+1])				
+					.attr("x2",block_rec.attr("width"))
+					.attr("y2",cut[i+1])
+					.attr("stroke","yellow")
+					.attr("stroke-width",5)
+				   svg.append("line")
+					.attr("x1",0)
+					.attr("y1",cut[i+1])				
+					.attr("x2",width)
+					.attr("y2",cut[i+1])
+					.attr("stroke","yellow")
+					.attr("stroke-width",2)
+			    }else{
+				   svg_block.append("line")
+					.attr("x1",0)
+					.attr("y1",height)				
+					.attr("x2",block_rec.attr("width"))
+					.attr("y2",height)
+					.attr("stroke","yellow")
+					.attr("stroke-width",5)
+				   svg.append("line")
+					.attr("x1",0)
+					.attr("y1",height)				
+					.attr("x2",width)
+					.attr("y2",height)
+					.attr("stroke","yellow")
+					.attr("stroke-width",2)
+				}
+			 /*tooltip.html(d)
 			 .style("left",(d3.event.pageX) +"px")
 			 .style("top",(d3.event.pageY)+"px")
-			 .style("opacity",1.0)
+			 .style("opacity",1.0)*/
 		    })
-          block.append("text")
+			.on("mouseout",function(d,i){
+			   svg_block.selectAll("line").remove()
+			   svg.selectAll("line").remove()
+			})
+         /* block.append("text")
             .attr("class", "mono")
             .text(function(d,i) { return "label:" + i; })
             .attr("x", 80)
@@ -227,7 +273,7 @@
 			.attr("y",function(d,i){
 			    return d
 			})
-            .style("writing-mode","tb-rl")
+            .style("writing-mode","tb-rl")*/
 			
           block.exit().remove();
 		  
