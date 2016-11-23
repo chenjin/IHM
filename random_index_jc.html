@@ -86,7 +86,7 @@
 		 .attr("class","tooltip")
 		 .style("opacity",0.0)
 		 // duration(1000) ?1000ns????1s???????
-		  heatMap.transition().duration(1)
+		 heatMap.transition().duration(1)
 		    //.style("fill",function(d){return colorScale(d);});
 			.style("fill",function(d){return compute(linear(d));})
 	     /* heatMap
@@ -96,21 +96,7 @@
 			 .style("top",(d3.event.pageY)+"px")
 			 .style("opacity",1.0)
 		  })*/
-		  var omenu=d3.select("#menu")
-          .style("display","none"); 
-          var title = document.getElementById("menu").getElementsByTagName("li")
-		  for(var index=0;index<title.length;index++){ 
-			title[index].onmouseover=function(){ 
-			  this.className="active";
-			}; 
-			title[index].onclick=function(){
-			  omenu.style("display","none")
-			  
-			};
-			title[index].onmouseout=function(){
-			  this.className=""; 
-			}; 
-		  } 
+		  
 		 
 		  var svg_block =d3.select("#chart").append("svg")
 			 .attr("width", 300)
@@ -163,9 +149,9 @@
 		  var estimate = function(cluster,data){
 		     var a =new Array(data.length),
 			 b =new Array(data.length),
-			 s =new Array(data.length),
+			 s =new Array(data.length),//sihoute for each row
+			 g =new Array(buckets)
 			 avg_s =0
-
 		     for(var row=0; row< data.length; row++){
 			    a[row]=0
 				b[row]=0
@@ -189,28 +175,47 @@
 						outside++
 					}		
 				}
-				//console.log(inside)
-				//console.log(outside)
 				if(inside > 0){
 					a[row] = a[row] /inside
 			    }
 				if(outside > 0){
 					b[row] = b[row] /outside
 			    }
-				//console.log(a[row])
-				//console.log(b[row])
 				s[row] = (b[row] -a[row])/Math.max(a[row],b[row])
-				//console.log(Math.max(a[row],b[row]))
 				avg_s += s[row]
-				//console.log(avg_s)
 			 }
+			 for(var i=0;i<g.length;i++){
+			    g[i] =0
+			 }
+			 for(var row=0; row< data.length; row++){
+			    g[cluster[row]] += s[row]
+			 }
+			 for(var i=1;i <cut.length;i++){
+			    g[i-1] /= (cut[i]-cut[i-1])
+			 }
+			 g[cut.length-1] /= (height - cut[cut.length-1])
 			 avg_s /= data.length 
 			 console.log(avg_s)
-			 return avg_s
+			 return {avg:avg_s,group:g}
 		  }
-		  var avg_s = estimate(cluster,data)
-		  document.getElementById("menu").insertAdjacentHTML("afterBegin","The sihoute coefficient is:"+avg_s+",how do you like this cluster?")
 		  
+		  var est_obj = estimate(cluster,data)
+		  
+		  var omenu=d3.select("#menu")
+          .style("display","none"); 
+          var title = document.getElementById("menu").getElementsByTagName("li")
+		  for(var index=0;index<title.length;index++){ 
+			title[index].onmouseover=function(){ 
+			  this.className="active";
+			}; 
+			title[index].onclick=function(){
+			  omenu.style("display","none")
+			  alert("user's comment to cluster "+index+ " is:"+event.srcElement.innerHTML)
+			};
+			title[index].onmouseout=function(){
+			  this.className=""; 
+			}; 
+		  } 
 		  //block on the right
 		  var block = svg_block.selectAll(".block")
              // .data([0].concat(colorScale.quantiles()), function(d) { return d; });
@@ -343,6 +348,9 @@
 			})
 			.on("contextmenu", function(data, index) {
 			   //handle right click
+			   var menu =document.getElementById("menu")
+			   menu.removeChild(menu.childNodes[0])
+			   menu.insertAdjacentHTML("afterBegin","<h>The sihoute coefficient is:"+est_obj.group[index]+",how do you like this cluster?</h>")
 			   omenu
 			   .style("display","block")
 			   .style("left",(d3.event.pageX) +"px")
@@ -350,7 +358,15 @@
 			   d3.event.preventDefault()
 			});
           block.exit().remove();
-		  
+		  /*block.append("text")
+            .attr("class", "mono")
+            .text(function(d,i) { return "label:" + i; })
+            .attr("x", 80)
+            //.attr("y", function(d, i) { return height /colors.length * i ;})
+			.attr("y",function(d,i){
+			    return d
+			})
+            .style("writing-mode","tb-rl")*/
 		  
 		 
       //???legend
