@@ -12,11 +12,11 @@
  <div id="chart" style="WHITE-SPACE:nowrap"></div>
  <div id="legend"></div>
  <ul id="menu"> 
-  <li><a href="#">excellent,keep the cluster</a></li> 
-  <li><a href="#">good but can be further improved</a></li> 
-  <li><a href="#">not good nor bad</a></li> 
-  <li><a href="#">bad,consider rebuilding the cluster</a></li>
-  <li><a href="#">terrible,must rebuild it</a></li>   
+  <li>excellent,keep the cluster</li> 
+  <li>good but can be further improved</li> 
+  <li>not good nor bad</li> 
+  <li>bad,consider rebuilding the cluster</li>
+  <li>terrible,must rebuild it</li>   
 </ul>
  <defs>  
     <linearGradient id="myGradient" x1="0%" y1="0%" x2="100%" y2="0%">  
@@ -96,17 +96,22 @@
 			 .style("top",(d3.event.pageY)+"px")
 			 .style("opacity",1.0)
 		  })*/
-		  var omenu=d3.select("#menu");
-          omenu.style("display","none"); 
+		  var omenu=d3.select("#menu")
+          .style("display","none"); 
           var title = document.getElementById("menu").getElementsByTagName("li")
 		  for(var index=0;index<title.length;index++){ 
 			title[index].onmouseover=function(){ 
 			  this.className="active";
 			}; 
+			title[index].onclick=function(){
+			  omenu.style("display","none")
+			  
+			};
 			title[index].onmouseout=function(){
 			  this.className=""; 
 			}; 
 		  } 
+		 
 		  var svg_block =d3.select("#chart").append("svg")
 			 .attr("width", 300)
 			 .attr("height",height +margin.top + margin.bottom)
@@ -182,8 +187,7 @@
 					}else{//distance among cluster
 					    b[row] += Math.sqrt(distance)
 						outside++
-					}
-					
+					}		
 				}
 				//console.log(inside)
 				//console.log(outside)
@@ -205,6 +209,8 @@
 			 return avg_s
 		  }
 		  var avg_s = estimate(cluster,data)
+		  document.getElementById("menu").insertAdjacentHTML("afterBegin","The sihoute coefficient is:"+avg_s+",how do you like this cluster?")
+		  
 		  //block on the right
 		  var block = svg_block.selectAll(".block")
              // .data([0].concat(colorScale.quantiles()), function(d) { return d; });
@@ -343,9 +349,6 @@
 			   .style("top",(d3.event.pageY)+"px")
 			   d3.event.preventDefault()
 			});
-		 
-         
-			
           block.exit().remove();
 		  
 		  
