@@ -11,6 +11,13 @@
  <h1>This is a heatmap example using d3.js</h1>
  <div id="chart" style="WHITE-SPACE:nowrap"></div>
  <div id="legend"></div>
+ <ul id="menu"> 
+  <li><a href="#">excellent,keep the cluster</a></li> 
+  <li><a href="#">good but can be further improved</a></li> 
+  <li><a href="#">not good nor bad</a></li> 
+  <li><a href="#">bad,consider rebuilding the cluster</a></li>
+  <li><a href="#">terrible,must rebuild it</a></li>   
+</ul>
  <defs>  
     <linearGradient id="myGradient" x1="0%" y1="0%" x2="100%" y2="0%">  
         <stop offset="0%" stop-color="#F00" />  
@@ -37,12 +44,12 @@
 		var margin = { top: 0, right: 0, bottom: 0, left: 0 },
 		  heatmapwidth = 600,
 		  heatmapheight = 800,
-		  width = heatmapwidth + margin.left + margin.right,        // ?????????¨¬?Heatmap???
+		  width = heatmapwidth + margin.left + margin.right,        // ????????????Heatmap???
 		  height = heatmapheight + margin.top + margin.bottom,
 		  
-		  gridSize = Math.floor(width / matrixcol),    // ???¨¬???§³???¨¬width??24?
-		  gridSize_h = Math.floor(height / matrixrow),    // ???¨¬???§³???¨¬width??24?
-		  legendElementWidth = gridSize_h * 2,    // ???????¨¬¡¦?????}?
+		  gridSize = Math.floor(width / matrixcol),    // ???????????????width??24?
+		  gridSize_h = Math.floor(height / matrixrow),    // ???????????????width??24?
+		  legendElementWidth = gridSize_h * 2,    // ????????????????}?
 		  buckets = 9,        // ??9?????
 		  colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"]; 
 		 
@@ -52,17 +59,17 @@
 		  var colorScale =d3.scale.quantile()
 			.domain([d3.min(array_data),buckets-1,d3.max(array_data)])//???[0,n,?????]
 			.range(colors)//??
-		  //??chart¨¬svg
+		  //??chart??svg
 		  
 		  var svg =d3.select("#chart").append("svg")
 			 .attr("width",width+margin.left + margin.right)
 			 .attr("height",height +margin.top + margin.bottom)
-			 .append("g")//?svg?????g¨¬?????g§¥?¦Ë?
+			 .append("g")//?svg?????g???????g??????
 			 .attr("transform","translate("+margin.left+","+margin.top+")")
 		  
 		  var heatMap =svg.selectAll(".score")
 		    .data(array_data)
-			.enter()//?data???§À????".score"
+			.enter()//?data?????????".score"
 			.append("rect")
 			.attr("x",function(d,i){return (i % matrixrow)*gridSize;})
 			.attr("y",function(d,i){return parseInt(i / matrixrow)*gridSize_h;})
@@ -78,7 +85,7 @@
 		 .append("div")
 		 .attr("class","tooltip")
 		 .style("opacity",0.0)
-		 // duration(1000) ?1000ns??¡¦1s???????
+		 // duration(1000) ?1000ns????1s???????
 		  heatMap.transition().duration(1)
 		    //.style("fill",function(d){return colorScale(d);});
 			.style("fill",function(d){return compute(linear(d));})
@@ -89,12 +96,21 @@
 			 .style("top",(d3.event.pageY)+"px")
 			 .style("opacity",1.0)
 		  })*/
-		  
-		  
+		  var omenu=d3.select("#menu");
+          omenu.style("display","none"); 
+          var title = document.getElementById("menu").getElementsByTagName("li")
+		  for(var index=0;index<title.length;index++){ 
+			title[index].onmouseover=function(){ 
+			  this.className="active";
+			}; 
+			title[index].onmouseout=function(){
+			  this.className=""; 
+			}; 
+		  } 
 		  var svg_block =d3.select("#chart").append("svg")
 			 .attr("width", 300)
 			 .attr("height",height +margin.top + margin.bottom)
-			 .append("g")//?svg?????g¨¬?????g§¥?¦Ë?
+			 .append("g")//?svg?????g???????g??????
 			 .attr("transform","translate("+(margin.left+20)+","+0+")")
 			  
           //get k non-duplicate random numbers
@@ -209,7 +225,8 @@
 				 return height-cut[i]
 			})
             .style("fill", function(d, i){return colors[i];})
-		  console.log(block_rec.attr("width"))	
+		  //console.log(block_rec.attr("width"))
+		  
           block_rec.on("mouseover",function(d,i){
 			    svg_block.append("line")
               	.attr("x1",0)
@@ -312,33 +329,22 @@
 					.attr("stroke","yellow")
 					.attr("stroke-width",5)
 				}
-			 /*tooltip.html(d)
-			 .style("left",(d3.event.pageX) +"px")
-			 .style("top",(d3.event.pageY)+"px")
-			 .style("opacity",1.0)*/
 		    })
 			.on("mouseout",function(d,i){
 			   svg_block.selectAll("line").remove()
 			   svg.selectAll("line").remove()
+			   //omenu.style("display","none")
 			})
 			.on("contextmenu", function(data, index) {
 			   //handle right click
-                tooltip.html("ddsfds")
-			 .style("left",(d3.event.pageX) +"px")
-			 .style("top",(d3.event.pageY)+"px")
-			 .style("opacity",1.0)
-			   //stop showing browser menu
+			   omenu
+			   .style("display","block")
+			   .style("left",(d3.event.pageX) +"px")
+			   .style("top",(d3.event.pageY)+"px")
 			   d3.event.preventDefault()
 			});
-         /* block.append("text")
-            .attr("class", "mono")
-            .text(function(d,i) { return "label:" + i; })
-            .attr("x", 80)
-            //.attr("y", function(d, i) { return height /colors.length * i ;})
-			.attr("y",function(d,i){
-			    return d
-			})
-            .style("writing-mode","tb-rl")*/
+		 
+         
 			
           block.exit().remove();
 		  
