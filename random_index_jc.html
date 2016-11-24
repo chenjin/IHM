@@ -106,7 +106,7 @@
 			  
           //get k non-duplicate random numbers
           var origin = new Array;
-		  for(var i=0;i<height;i++){
+		  for(var i=0;i<matrixrow;i++){
 		      origin[i] = i+1
 		  }
 		  origin.sort(function(){
@@ -252,13 +252,18 @@
 		     var a =new Array(data.length),
 			 b =new Array(data.length),
 			 s =new Array(data.length),//sihoute for each row
-			 g =new Array(buckets)
+			 g =new Array(buckets),//sihoute for each group
+			 centers = new Array(buckets)
+			 for(var i=0;i<buckets;i++){
+			     centers[i] = math.zeros(data[0].length)
+			 }
 			 avg_s =0
 		     for(var row=0; row< data.length; row++){
 			    a[row]=0
 				b[row]=0
 				s[row]=0
 			    var inside =0,outside=0
+				centers[cluster[i]] = math.add(centers[cluster[i]],data[row])
 			    for(var other=0;other< data.length;other++){
 				    if(row == other){
 					    continue;
@@ -286,6 +291,11 @@
 				s[row] = (b[row] -a[row])/Math.max(a[row],b[row])
 				avg_s += s[row]
 			 }
+			 for(var i=1;i<buckets;i++){
+			     centers[i-1] = math.multiply(centers[i-1],1/(cut[i]-cut[i-1]))
+			 }
+			 centers[buckets-1] = math.multiply(centers[buckets-1],1/(matrixrow-cut[cut.length-1]))
+			 
 			 for(var i=0;i<g.length;i++){
 			    g[i] =0
 			 }
@@ -295,10 +305,10 @@
 			 for(var i=1;i <cut.length;i++){
 			    g[i-1] /= (cut[i]-cut[i-1])
 				if(g[i-1]<0){
-				    g[i-1] = -g[i-1]
+				    g[i-1] = -g[i-1]//to make positive,should be removed
 				}
 			 }
-			 g[cut.length-1] /= (height - cut[cut.length-1])			 
+			 g[cut.length-1] /= (matrixrow - cut[cut.length-1])			 
 			 if(g[cut.length-1]<0){
 			     g[cut.length-1] = -g[cut.length-1]
 			 }
@@ -421,12 +431,12 @@
 					  .attr("height", function(d){
 						  return height - padding.top - padding.bottom - yScale(d);
 					  })
-					  .attr("fill","steelblue")        //填充颜色不要写在CSS里
+					  .attr("fill","steelblue")        //?????????д??CSS??
 					  .on("mouseover",function(d,i){
 						  d3.select(this)
 							.attr("fill","yellow");
 						  edge_highlight(i)
-					  })
+					    })
 					 .on("mouseout",function(d,i){
 						  d3.select(this)
 							.transition()
