@@ -99,7 +99,7 @@
 		  
 		 
 		  var svg_block =d3.select("#chart").append("svg")
-			 .attr("width", 300)
+			 .attr("width", 100)
 			 .attr("height",height +margin.top + margin.bottom)
 			 .append("g")//?svg?????g???????g??????
 			 .attr("transform","translate("+(margin.left+20)+","+0+")")
@@ -192,8 +192,14 @@
 			 }
 			 for(var i=1;i <cut.length;i++){
 			    g[i-1] /= (cut[i]-cut[i-1])
+				if(g[i-1]<0){
+				    g[i-1] = -g[i-1]
+				}
 			 }
-			 g[cut.length-1] /= (height - cut[cut.length-1])
+			 g[cut.length-1] /= (height - cut[cut.length-1])			 
+			 if(g[cut.length-1]<0){
+			     g[cut.length-1] = -g[cut.length-1]
+			 }
 			 avg_s /= data.length 
 			 console.log(avg_s)
 			 return {avg:avg_s,group:g}
@@ -202,7 +208,10 @@
 		  var est_obj = estimate(cluster,data)
 		  
 		  var omenu=d3.select("#menu")
-          .style("display","none"); 
+          .style("display","none")
+		  .on("mouseout",function(d,i){
+		     //omenu.style("display","none")
+		  }); 
           var title = document.getElementById("menu").getElementsByTagName("li")
 		  for(var index=0;index<title.length;index++){ 
 			title[index].onmouseover=function(){ 
@@ -210,7 +219,7 @@
 			}; 
 			title[index].onclick=function(){
 			  omenu.style("display","none")
-			  alert("user's comment to cluster "+index+ " is:"+event.srcElement.innerHTML)
+			  //alert("user's comment to cluster "+index+ " is:"+event.srcElement.innerHTML)
 			};
 			title[index].onmouseout=function(){
 			  this.className=""; 
@@ -350,7 +359,7 @@
 			   //handle right click
 			   var menu =document.getElementById("menu")
 			   menu.removeChild(menu.childNodes[0])
-			   menu.insertAdjacentHTML("afterBegin","<h>The sihoute coefficient is:"+est_obj.group[index]+",how do you like this cluster?</h>")
+			   menu.insertAdjacentHTML("afterBegin","<h>The sihoute coefficient for this cluster is:"+est_obj.group[index]+",how do you like this cluster?</h>")
 			   omenu
 			   .style("display","block")
 			   .style("left",(d3.event.pageX) +"px")
@@ -367,8 +376,85 @@
 			    return d
 			})
             .style("writing-mode","tb-rl")*/
-		  
-		 
+			
+		 // draw charts of sihoute coefficient for each cluster
+		 var svg_chart =d3.select("#chart").append("svg")
+			 .attr("width", 500)
+			 .attr("height",height +margin.top + margin.bottom)
+			 .append("g")//?svg?????g???????g??????
+			 .attr("transform","translate("+(margin.left+20)+","+0+")")
+		 var padding ={left:50,right:30,top:20,bottom:20}
+		 var xScale =d3.scale.ordinal()
+                       .domain(d3.range(est_obj.group.length))
+                       .rangeRoundBands([0,500-padding.left-padding.right])
+         var yScale =d3.scale.linear()
+                       .domain([0,d3.max(est_obj.group)])
+                       .range([height +margin.top + margin.bottom-padding.top-padding.bottom,0])					   
+	     var xAxis =d3.svg.axis()
+                      .scale(xScale)
+                      .orient("bottom")
+         var yAxis =d3.svg.axis()
+                      .scale(yScale)
+                      .orient("left")
+		 var rectPadding =4
+		 var rects = svg_chart.selectAll(".MyRect")
+		              .data(est_obj.group)
+					  .enter()
+					  .append("rect")
+					  .attr("class","MyRect")
+					  .attr("transform","translate("+padding.left+","+padding.top+")")
+					  .attr("x",function(d,i){
+					      return xScale(i) + rectPadding /2
+					  })
+					  .attr("y",function(d,i){
+					      return yScale(d)
+					  })
+					  .attr("width", xScale.rangeBand() - rectPadding )
+					  .attr("height", function(d){
+						  return height - padding.top - padding.bottom - yScale(d);
+					  })
+					  .attr("fill","steelblue")        //填充颜色不要写在CSS里
+					  .on("mouseover",function(d,i){
+						  d3.select(this)
+							.attr("fill","yellow");
+					  })
+					 .on("mouseout",function(d,i){
+						  d3.select(this)
+							.transition()
+							.duration(500)
+							.attr("fill","steelblue");
+						})
+         var texts = svg_chart.selectAll(".MyText")
+			.data(est_obj.group)
+			.enter()
+			.append("text")
+			.attr("class","MyText")
+			.attr("transform","translate(" + padding.left + "," + padding.top + ")")
+			.attr("x", function(d,i){
+				return xScale(i) + rectPadding/2;
+			} )
+			.attr("y",function(d){
+				return yScale(d);
+			})
+			.attr("dx",function(){
+				return (xScale.rangeBand() - rectPadding)/2;
+			})
+			.attr("dy",function(d){
+				return 20;
+			})
+			.text(function(d){
+				return d;
+			});
+		 svg_chart.append("g")
+		    .attr("class","axis")
+			.attr("transform","translate(" + padding.left + "," + (height +margin.top + margin.bottom-padding.bottom) + ")")
+            .call(xAxis); 
+    	 svg_chart.append("g")
+		    .attr("class","axis")
+            .attr("transform","translate(" + padding.left + "," + padding.top + ")")
+            .call(yAxis);
+
+			
       //???legend
 		 var svg_legend =d3.select("#legend").append("svg")
 			 .attr("width", 300)
