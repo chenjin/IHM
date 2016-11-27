@@ -43,9 +43,9 @@ var estimate = function(cluster,data){
 	avg_s += s[row]
  }
  for(var i=1;i<buckets;i++){
-	centers[i-1] = math.multiply(centers[i-1],1/(cut[i]-cut[i-1]))
+	centers[i-1] = math.multiply(centers[i-1],1/(data_cut[i]-data_cut[i-1]))
  }
- centers[buckets-1] = math.multiply(centers[buckets-1],1/(matrixrow-cut[cut.length-1]))
+ centers[buckets-1] = math.multiply(centers[buckets-1],1/(matrixrow-data_cut[buckets-1]))
 
  var sorted_points =new Array(buckets)
  for(var i=0;i<g.length;i++){
@@ -76,15 +76,15 @@ var estimate = function(cluster,data){
 	console.log("")
  }
  
- for(var i=1;i <cut.length;i++){
-	g[i-1] /= (cut[i]-cut[i-1])
+ for(var i=1;i <buckets;i++){
+	g[i-1] /= (data_cut[i]-data_cut[i-1])
 	if(g[i-1]<0){
 		g[i-1] = -g[i-1]//to make positive,should be removed
 	}
  }
- g[cut.length-1] /= (matrixrow - cut[cut.length-1])			 
- if(g[cut.length-1]<0){
-	 g[cut.length-1] = -g[cut.length-1]
+ g[buckets-1] /= (matrixrow - data_cut[buckets-1])			 
+ if(g[buckets-1]<0){
+	 g[buckets-1] = -g[buckets-1]
  }
  avg_s /= data.length 
  console.log(avg_s)
