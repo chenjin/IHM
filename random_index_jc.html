@@ -192,7 +192,39 @@
 			block_rec.on("mouseover",function(d,i){
 			    edge_highlight(i)
 			    rects.filter(function(data, inx) { return inx == i; }).attr("fill","yellow");
-				
+				var xScale_line =d3.scale.linear()
+                                    .domain(d3.extent(est_obj.sorted_points[i],function(d){return d[0]}))
+                                    .range([0,500-padding.left-padding.right])
+                var yScale_line =d3.scale.linear()
+								   .domain([0,d3.max(est_obj.sorted_points[i],function(d){return d[2]})])
+								   .range([height +margin.top + margin.bottom-padding.top-padding.bottom,0])
+                var xAxis = d3.svg.axis()
+							.scale(xScale_line)
+							.orient('bottom');
+						
+				var yAxis = d3.svg.axis()
+							.scale(yScale_line)
+							.orient('left');
+        
+                svg_linechart.append("g")
+						.attr("class","axis")
+						.attr("transform","translate(" + padding.left + "," + (height +margin.top + margin.bottom-padding.bottom) + ")")
+						.call(xAxis); 
+			    svg_linechart.append("g")
+						.attr("class","axis")
+						.attr("transform","translate(" + padding.left + "," + padding.top + ")")
+						.call(yAxis);
+                var line =d3.svg.line()
+                        .x(function(d){
+						    return xScale_line(d[0])
+						})
+                        .y(function(d){
+						    return yScale_line(d[2])
+						})
+                        .interpolate('linear')
+                svg_linechart.append('path')
+                        .attr('class','line')				
+						.attr('d',line(est_obj.sorted_points[i]))
 		    })
 			.on("mouseout",function(d,i){
 			   rects.filter(function(data,inx){return inx ==i;})
@@ -226,7 +258,7 @@
             .style("writing-mode","tb-rl")*/
           
 			
-		 // draw charts of sihoute coefficient for each cluster
+		 // draw charts of sihoute coefficient for all clusters
 		 var svg_chart =d3.select("#chart").append("svg")
 			 .attr("width", 500)
 			 .attr("height",height +margin.top + margin.bottom)
@@ -237,7 +269,7 @@
                        .domain(d3.range(est_obj.group.length))
                        .rangeRoundBands([0,500-padding.left-padding.right])
          var yScale =d3.scale.linear()
-                       .domain([0,d3.max(est_obj.group)])
+                       .domain([d3.min(est_obj.group),d3.max(est_obj.group)])
                        .range([height +margin.top + margin.bottom-padding.top-padding.bottom,0])					   
 	     var xAxis =d3.svg.axis()
                       .scale(xScale)
@@ -262,7 +294,7 @@
 					  .attr("height", function(d){
 						  return height - padding.top - padding.bottom - yScale(d);
 					  })
-					  .attr("fill","steelblue")        //?????????§Õ??CSS??
+					  .attr("fill","steelblue")        //?????????????CSS??
 					  .on("mouseover",function(d,i){
 						  d3.select(this)
 							.attr("fill","yellow");
@@ -306,8 +338,14 @@
 		    .attr("class","axis")
             .attr("transform","translate(" + padding.left + "," + padding.top + ")")
             .call(yAxis);
-	
 			
+	  //draw line chart for certain cluster
+         var svg_linechart =d3.select("#chart").append("svg")
+			 .attr("width", 500)
+			 .attr("height",height +margin.top + margin.bottom)
+			 .append("g")//?svg?????g???????g??????
+			 .attr("transform","translate("+(margin.left+20)+","+0+")")
+		 	 
 			
       //???legend
 		 var svg_legend =d3.select("#legend").append("svg")

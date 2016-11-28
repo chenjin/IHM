@@ -66,7 +66,7 @@ var estimate = function(cluster,data){
  for(var i =0;i<buckets;i++){
 	sorted_points[i] =sorted_points[i].sort(function(x,y){return a[1]-b[1]})
 	.map(function(item,index){
-	return [item[0],s[item[0]]]
+	return [index,item[0],s[item[0]]]//in order to draw line-chart,add index
 	//return item[0]
 	})
 	for(var j=0;j< sorted_points[i].length;j++){
@@ -83,9 +83,9 @@ var estimate = function(cluster,data){
 	}
  }
  g[buckets-1] /= (matrixrow - data_cut[buckets-1])			 
- if(g[buckets-1]<0){
+ /*if(g[buckets-1]<0){
 	 g[buckets-1] = -g[buckets-1]
- }
+ }*/
  avg_s /= data.length 
  console.log(avg_s)
  return {avg:avg_s,group:g,sorted_points:sorted_points}
