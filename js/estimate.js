@@ -64,14 +64,13 @@ var estimate = function(cluster,data){
  }
  
  for(var i =0;i<buckets;i++){
-	sorted_points[i] =sorted_points[i].sort(function(x,y){return a[1]-b[1]})
+	sorted_points[i] =sorted_points[i].sort(function(a,b){return a[1]-b[1]})
 	.map(function(item,index){
-	return [index,item[0],s[item[0]]]//in order to draw line-chart,add index
-	//return item[0]
+	    //return [index+1,item[0],s[item[0]]]//in order to draw line-chart,add index,the third element is sihoute coefficient
+	    return [index,item[0],item[1]]//the third element is distance to center
 	})
 	for(var j=0;j< sorted_points[i].length;j++){
-		console.log(sorted_points[i][j][0]+' '+sorted_points[i][j][1])
-		//console.log(sorted_points[i][j])
+		//console.log(sorted_points[i][j][0]+' '+sorted_points[i][j][1]+' '+sorted_points[i][j][2])
 	}
 	console.log("")
  }
