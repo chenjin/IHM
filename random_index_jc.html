@@ -5,7 +5,6 @@
     <link rel="stylesheet" href="/style.css" type="text/css" />
     <script type="text/javascript" src="/d3.v3.min.js"> </script>
 	<script type="text/javascript" src="/math.min.js"> </script>
-	<script type="text/javascript" src="/CrystalLineObject.js"> </script>
 	<script type="text/javascript" src="/estimate.js"> </script>
 	<script type="text/javascript" src="/highlight.js"> </script>
   </head>
@@ -192,13 +191,6 @@
 			block_rec.on("mouseover",function(d,i){
 			    edge_highlight(i)
 			    rects.filter(function(data, inx) { return inx == i; }).attr("fill","yellow");
-				/*est_obj.sorted_points[i] = [
-				  {x: 0, y: 11}, {x: 1, y: 35},
-				  {x: 2, y: 23}, {x: 3, y: 78},
-				  {x: 4, y: 55}, {x: 5, y: 18},
-				  {x: 6, y: 98}, {x: 7, y: 100},
-				  {x: 8, y: 22}, {x: 9, y: 65}
-				];*/
 				var xScale_line =d3.scale.linear()
                                     .domain(d3.extent(est_obj.sorted_points[i],function(d){return d.x}))
                                     .range([0,500-padding.left-padding.right])
@@ -216,11 +208,21 @@
                 svg_linechart.append("g")
 						.attr("class","axis")
 						.attr("transform","translate(" + padding.left + "," + (height-padding.bottom) + ")")
-						.call(xAxis_line); 
+						.call(xAxis_line)
+                        .append("text")
+						.text("Points within cluster")						
 			    svg_linechart.append("g")
 						.attr("class","axis")
 						.attr("transform","translate(" + padding.left + "," + padding.top + ")")
-						.call(yAxis_line);
+						.call(yAxis_line)
+						.append("text")
+						.text("Distance to center")
+                        //.selectAll("text")
+						//.style("text-anchor", "end")
+						//.attr("dx", ".30em")
+						//.attr("dy", ".0em")
+						//.attr("transform",function(d){return "rotate(-90)"})						
+						
                 var line =d3.svg.line()
                         .x(function(d){
 						    return padding.left +xScale_line(d.x)
@@ -232,12 +234,23 @@
                 svg_linechart.append('path')
                         .attr('class','line')				
 						.attr('d',line(est_obj.sorted_points[i]))
-				console.log(est_obj.sorted_points[i])
-			
+				svg_linechart.selectAll('circle')
+				        .data(est_obj.sorted_points[i])
+						.enter()
+						.append('circle')
+			            .attr('cx',function(d){
+						    return padding.left +xScale_line(d.x)
+						})
+						.attr('cy',function(d){
+						    return yScale_line(d.y)
+						})
+						.attr('r',5)
+						
 		    })
 			.on("mouseout",function(d,i){
 			   svg_linechart.selectAll("g").remove()
 			   svg_linechart.selectAll("path").remove()
+			   svg_linechart.selectAll("circle").remove()
 			   rects.filter(function(data,inx){return inx ==i;})
 				   .transition()
 				   .duration(500)
@@ -328,7 +341,7 @@
 			.attr("transform","translate(" + padding.left + "," + padding.top + ")")
 			.attr("x", function(d,i){
 				return xScale(i) + rectPadding/2;
-			} )
+			})
 			.attr("y",function(d){
 				return yScale(d);
 			})
@@ -344,11 +357,15 @@
 		 svg_chart.append("g")
 		    .attr("class","axis")
 			.attr("transform","translate(" + padding.left + "," + (height -padding.bottom) + ")")
-            .call(xAxis); 
+            .call(xAxis)
+			.append("text")
+			.text("Cluster Id"); 
     	 svg_chart.append("g")
 		    .attr("class","axis")
             .attr("transform","translate(" + padding.left + "," + padding.top + ")")
-            .call(yAxis);
+            .call(yAxis)
+			.append("text")
+		    .text("Sihoutte Coefficient");
 			
 	  //draw line chart for certain cluster
          var svg_linechart =d3.select("#chart").append("svg")
