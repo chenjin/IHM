@@ -41,7 +41,7 @@
 				array_data[i*matrixrow+j] =data[i][j]
 			}
 		}
-		
+		var cur_rightblock =0//the block number mouse right clicked now
 		var margin = { top: 0, right: 0, bottom: 0, left: 0 },
 		  heatmapwidth = 600,
 		  heatmapheight = 800,
@@ -53,13 +53,12 @@
 		  legendElementWidth = gridSize_h * 2,    // ????????????????}?
 		  buckets = 9,        // ??9?????
 		  colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"]; 
-		 
 		  var linear = d3.scale.linear()
 		    .domain([d3.min(array_data),d3.max(array_data)])
 			.range([0,1])
-		  var colorScale =d3.scale.quantile()
+		  /*var colorScale =d3.scale.quantile()
 			.domain([d3.min(array_data),buckets-1,d3.max(array_data)])//???[0,n,?????]
-			.range(colors)//??
+			.range(colors)*///??
 		  //??chart??svg
 		  
 		  var svg =d3.select("#chart").append("svg")
@@ -153,19 +152,13 @@
 		  .on("mouseout",function(d,i){
 		     //omenu.style("display","none")
 		  }); 
-          var title = document.getElementById("menu").getElementsByTagName("li")
-		  for(var index=0;index<title.length;index++){ 
-			title[index].onmouseover=function(){ 
-			  this.className="active";
-			}; 
-			title[index].onclick=function(){
-			  omenu.style("display","none")
-			  //alert("user's comment to cluster "+index+ " is:"+event.srcElement.innerHTML)
-			};
-			title[index].onmouseout=function(){
-			  this.className=""; 
-			}; 
-		  } 
+          omenu.selectAll("li")
+		  .on("mouseover",function(d,i){d3.select(this).classed('active',true)})
+          .on("click",function(d,i){
+				   var cur_block = block.filter(function(data,index){return index==cur_rightblock})
+				   cur_block.select("rect").style("fill",colors[i*2])
+		      })
+          .on("mouseout", function(d,i){d3.select(this).classed('active',false)})		  
 		  //block on the right
 		  var block = svg_block.selectAll(".block")
              // .data([0].concat(colorScale.quantiles()), function(d) { return d; });
@@ -185,7 +178,13 @@
 			     if(i<cut.length-1) return cut[i+1]-cut[i]
 				 return height-cut[i]
 			})
-            .style("fill", function(d, i){return colors[i];})
+            .style("fill", function(d, i){
+			     if(est_obj.group[i] >0.08){return colors[0]}
+			     else if(est_obj.group[i] > 0.04){return colors[2]}
+				 else if(est_obj.group[i] > 0.01){return colors[4]}
+				 else if(est_obj.group[i] > -0.02){return colors[6]}
+				 return colors[8]
+				 })
 		  //console.log(block_rec.attr("width"))
 		  //bind block's listener		
 			block_rec.on("mouseover",function(d,i){
@@ -263,11 +262,12 @@
 			   //handle right click
 			   var menu =document.getElementById("menu")
 			   menu.removeChild(menu.childNodes[0])
-			   menu.insertAdjacentHTML("afterBegin","<h>The sihoute coefficient for this cluster is:"+est_obj.group[index]+",how do you like this cluster?</h>")
+			   menu.insertAdjacentHTML("afterBegin","<h>The sihoute coefficient for this cluster is : "+est_obj.group[index]+",how do you like this cluster?</h>")
 			   omenu
 			   .style("display","block")
 			   .style("left",(d3.event.pageX) +"px")
 			   .style("top",(d3.event.pageY)+"px")
+			   cur_rightblock = index
 			   d3.event.preventDefault()
 			});
           block.exit().remove();
@@ -375,7 +375,7 @@
 			
       //???legend
 		 var svg_legend =d3.select("#legend").append("svg")
-			 .attr("width", 300)
+			 .attr("width", 1000)
 			 .attr("height",80)
 			 .attr("x",50)
 			 .attr("y", heatmapheight)
@@ -395,22 +395,34 @@
                 .attr("offset","100%")  
                 .style("stop-color",b.toString());
 		  var colorRect = svg_legend.append("rect")
-                .attr("x", 100)  
+                .attr("x", 70)  
                 .attr("y", 0)  
                 .attr("width", 200)  
                 .attr("height", 30)  
                 .style("fill","url(#" + linearGradient.attr("id") + ")"); 
           var text_small =svg_legend.append("text")
-              	.attr("class","small")
                 .text("small")
-                .attr("x",100)
+                .attr("x",70)
 				.attr("y",60)
 		  var text_large =svg_legend.append("text")
-              	.attr("class","large")
                 .text("large")
-                .attr("x",250)
+                .attr("x",220)
 				.attr("y",60)
-       
+		  for(var i =0;i<5;i++){
+			   svg_legend.append("rect")
+					.attr("x", 300+i*70)  
+					.attr("y", 0)  
+					.attr("width", 20)  
+					.attr("height", 30)  
+					.style("fill",colors[i*2])			
+		  }
+		  var comments=["exellent","good","ok","bad","terrible"]
+		  for(var i=0;i<5;i++){
+		       svg_legend.append("text")
+			        .text(comments[i])
+                    .attr("x",300+i*70)
+                    .attr("y",60)					
+		  }
          d3.select("body").on("click",function(d,i){
 		      omenu.style("display","none")
 		 })
