@@ -188,15 +188,22 @@
 			})
             .style("fill", function(d, i){return colors[i];})
 		  //console.log(block_rec.attr("width"))
-		  	   //bind block's listener		
+		  //bind block's listener		
 			block_rec.on("mouseover",function(d,i){
 			    edge_highlight(i)
 			    rects.filter(function(data, inx) { return inx == i; }).attr("fill","yellow");
+				/*est_obj.sorted_points[i] = [
+				  {x: 0, y: 11}, {x: 1, y: 35},
+				  {x: 2, y: 23}, {x: 3, y: 78},
+				  {x: 4, y: 55}, {x: 5, y: 18},
+				  {x: 6, y: 98}, {x: 7, y: 100},
+				  {x: 8, y: 22}, {x: 9, y: 65}
+				];*/
 				var xScale_line =d3.scale.linear()
-                                    .domain(d3.extent(est_obj.sorted_points[i],function(d){return d[0]}))
+                                    .domain(d3.extent(est_obj.sorted_points[i],function(d){return d.x}))
                                     .range([0,500-padding.left-padding.right])
                 var yScale_line =d3.scale.linear()
-								   .domain([0,d3.max(est_obj.sorted_points[i],function(d){return d[2]})])
+								   .domain([0,d3.max(est_obj.sorted_points[i],function(d){return d.y})])
 								   .range([height-padding.top-padding.bottom,0])
                 var xAxis_line = d3.svg.axis()
 							.scale(xScale_line)
@@ -216,18 +223,17 @@
 						.call(yAxis_line);
                 var line =d3.svg.line()
                         .x(function(d){
-						    return padding.left +xScale_line(d[0])
+						    return padding.left +xScale_line(d.x)
 						})
                         .y(function(d){
-						    return yScale_line(d[2])
+						    return yScale_line(d.y)
 						})
                         .interpolate('linear')
                 svg_linechart.append('path')
                         .attr('class','line')				
 						.attr('d',line(est_obj.sorted_points[i]))
-				for(var j =0;j< est_obj.sorted_points[i].length;j++){
-				    console.log(est_obj.sorted_points[i][j][2])
-				}
+				console.log(est_obj.sorted_points[i])
+			
 		    })
 			.on("mouseout",function(d,i){
 			   svg_linechart.selectAll("g").remove()
@@ -347,7 +353,7 @@
 	  //draw line chart for certain cluster
          var svg_linechart =d3.select("#chart").append("svg")
 			 .attr("width", 500)
-			 .attr("height",height )
+			 .attr("height",height)
 		 	 
 			
       //???legend

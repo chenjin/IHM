@@ -67,10 +67,12 @@ var estimate = function(cluster,data){
 	sorted_points[i] =sorted_points[i].sort(function(a,b){return a[1]-b[1]})
 	.map(function(item,index){
 	    //return [index+1,item[0],s[item[0]]]//in order to draw line-chart,add index,the third element is sihoute coefficient
-	    return [index,item[0],item[1]]//the third element is distance to center
+	    //return [index,item[0],item[1]]//the third element is distance to center
+		return {x:index,orginx:item[0],y:item[1]}
 	})
 	for(var j=0;j< sorted_points[i].length;j++){
 		//console.log(sorted_points[i][j][0]+' '+sorted_points[i][j][1]+' '+sorted_points[i][j][2])
+		//console.log(sorted_points[i][j].x+' '+sorted_points[i][j].orginx+' '+sorted_points[i][j].y)
 	}
 	console.log("")
  }
