@@ -195,7 +195,7 @@
                                     .domain(d3.extent(est_obj.sorted_points[i],function(d){return d.x}))
                                     .range([0,500-padding.left-padding.right])
                 var yScale_line =d3.scale.linear()
-								   .domain([0,d3.max(est_obj.sorted_points[i],function(d){return d.y})])
+								   .domain([0,d3.max(est_obj.sorted_points[i],function(d){return d.y})*1.1])//multiple 1.1 in order show the entire curve
 								   .range([height-padding.top-padding.bottom,0])
                 var xAxis_line = d3.svg.axis()
 							.scale(xScale_line)
@@ -207,7 +207,7 @@
         
                 svg_linechart.append("g")
 						.attr("class","axis")
-						.attr("transform","translate(" + padding.left + "," + (height-padding.bottom) + ")")
+						.attr("transform","translate(" + padding.left + "," + (height-padding.bottom-padding.top) + ")")
 						.call(xAxis_line)
                         .append("text")
 						.text("Points within cluster")						
@@ -245,7 +245,7 @@
 						    return yScale_line(d.y)
 						})
 						.attr('r',5)
-						
+					
 		    })
 			.on("mouseout",function(d,i){
 			   svg_linechart.selectAll("g").remove()
@@ -371,7 +371,7 @@
          var svg_linechart =d3.select("#chart").append("svg")
 			 .attr("width", 500)
 			 .attr("height",height)
-		 	 
+		 	 .attr("transform","translate("+(margin.left+20)+","+0+")")
 			
       //???legend
 		 var svg_legend =d3.select("#legend").append("svg")
