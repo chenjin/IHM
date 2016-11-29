@@ -47,7 +47,7 @@
 		  heatmapheight = 800,
 		  width = heatmapwidth + margin.left + margin.right,        // ????????????Heatmap???
 		  height = heatmapheight + margin.top + margin.bottom,
-		  
+		  chart_width = 300,
 		  gridSize = Math.floor(width / matrixcol),    // ???????????????width??24?
 		  gridSize_h = Math.floor(height / matrixrow),    // ???????????????width??24?
 		  legendElementWidth = gridSize_h * 2,    // ????????????????}?
@@ -192,7 +192,7 @@
 			    rects.filter(function(data, inx) { return inx == i; }).attr("fill","yellow");
 				var xScale_line =d3.scale.linear()
                                     .domain(d3.extent(est_obj.sorted_points[i],function(d){return d.x}))
-                                    .range([0,500-padding.left-padding.right])
+                                    .range([0,chart_width-padding.left-padding.right])
                 var yScale_line =d3.scale.linear()
 								   .domain([0,d3.max(est_obj.sorted_points[i],function(d){return d.y})*1.1])//multiple 1.1 in order show the entire curve
 								   .range([height-padding.top-padding.bottom,0])
@@ -284,14 +284,14 @@
 			
 		 // draw charts of sihoute coefficient for all clusters
 		 var svg_chart =d3.select("#chart").append("svg")
-			 .attr("width", 500)
+			 .attr("width", chart_width)
 			 .attr("height",height )
 			 .append("g")//?svg?????g???????g??????
 			 .attr("transform","translate("+(margin.left+20)+","+0+")")
 		 var padding ={left:50,right:30,top:20,bottom:20}
 		 var xScale =d3.scale.ordinal()
                        .domain(d3.range(est_obj.group.length))
-                       .rangeRoundBands([0,500-padding.left-padding.right])
+                       .rangeRoundBands([0,chart_width-padding.left-padding.right])
          var yScale =d3.scale.linear()
                        .domain([d3.min(est_obj.group),d3.max(est_obj.group)])
                        .range([height-padding.top-padding.bottom,0])					   
@@ -369,7 +369,7 @@
 			
 	  //draw line chart for certain cluster
          var svg_linechart =d3.select("#chart").append("svg")
-			 .attr("width", 500)
+			 .attr("width", chart_width)
 			 .attr("height",height)
 		 	 .attr("transform","translate("+(margin.left+20)+","+0+")")
 			
