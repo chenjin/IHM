@@ -99,7 +99,7 @@
 		  
 		 
 		  var svg_block =d3.select("#chart").append("svg")
-			 .attr("width", 100)
+			 .attr("width", 50)
 			 .attr("height",height)
 			 .append("g")//?svg?????g???????g??????
 			 .attr("transform","translate("+(margin.left+20)+","+0+")")
@@ -122,6 +122,7 @@
 		    cut[i] = cut[i-1]
 			data_cut[i] = Math.floor(cut[i] * matrixrow / heatmapheight)//change from pixel_height scale to data_size scale
 		  }
+		  
           data_cut[0] =0 		  
  		  cut[0] =0
 		  /*for(var i=0;i<cut.length;i++){
@@ -172,7 +173,7 @@
 			.attr("y",function(d,i){
 				return d;
 			})
-            .attr("width", 60)
+            .attr("width", 25)
             //.attr("height", height/colors.length)
 			.attr("height",function(d, i){
 			     if(i<cut.length-1) return cut[i+1]-cut[i]
@@ -253,8 +254,8 @@
 			   rects.filter(function(data,inx){return inx ==i;})
 				   .transition()
 				   .duration(500)
-				   .attr("fill","steelblue");			
-			   svg_block.selectAll("line").remove()
+				   .attr("fill","steelblue");
+			   svg_block.selectAll(".yellow").remove()
 			   svg.selectAll("line").remove()
 			   //omenu.style("display","none")
 			})
@@ -271,6 +272,15 @@
 			   d3.event.preventDefault()
 			});
           block.exit().remove();
+		  for(var i=buckets-1;i>0;i--){
+			  svg_block.append("line")
+					.attr("x1",0)
+					.attr("y1",cut[i])				
+					.attr("x2",25)
+					.attr("y2",cut[i])
+					.attr("stroke","white")
+					.attr("stroke-width",2)
+		  }
 		  /*block.append("text")
             .attr("class", "mono")
             .text(function(d,i) { return "label:" + i; })
@@ -333,7 +343,7 @@
 			              svg.selectAll("line").remove()
 						})
 						
-         var texts = svg_chart.selectAll(".MyText")
+         /*var texts = svg_chart.selectAll(".MyText")
 			.data(est_obj.group)
 			.enter()
 			.append("text")
@@ -353,7 +363,7 @@
 			})
 			.text(function(d){
 				return d;
-			});
+			});*/
 		 svg_chart.append("g")
 		    .attr("class","axis")
 			.attr("transform","translate(" + padding.left + "," + (height -padding.bottom) + ")")
