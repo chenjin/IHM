@@ -3,7 +3,7 @@
 <html>
   <head>
     <link rel="stylesheet" href="/style.css" type="text/css"/>
-	<link rel="stylesheet" href="/pace-theme-barber-shop.css"/>
+	<link rel="stylesheet" href="/pace-theme-center-circle.css"/>
     <script type="text/javascript" src="/d3.v3.min.js"> </script>
 	<script type="text/javascript" src="/math.min.js"> </script>
 	<script type="text/javascript" src="/estimate.js"> </script>
@@ -282,18 +282,18 @@
 					   //worker:true,
 					   comments:"#INFO",
 					   header:true,
-					   /*step:function(row){
+					   step:function(row){
 						   if(row.data[0]["t name"]){
 							   console.log(row.data[0]["t name"] + row.data[0]["p-value"])
 						   }
-					   },*/
+					   },
 					   //fastMode:true,
 					   complete:function(results){
 						   console.log("Finished:",results.data)
 						   result = results.data 
 					   }
 			   })
-			   },url)				
+			   },url)						   
 			   /*tooltip.html(result)
 				 .style("left",(d3.event.pageX) +"px")
 				 .style("top",(d3.event.pageY)+"px")
