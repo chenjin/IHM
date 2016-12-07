@@ -61,7 +61,8 @@
 		  gridSize_h = Math.floor(height / matrixrow),    // ???????????????width??24?
 		  legendElementWidth = gridSize_h * 2,    // ????????????????}?
 		  buckets = 9,        // ??9?????
-		  colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"]; 
+		  //colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"]; 
+		  colors =["#00CC33","#00CC66","#3366FF","#000099","#FFFF33","#CCCC99","#FF9933","#FF6666","#FF3333"]
 		  var tooltip = d3.select("body")
 		 .append("div")
 		 .attr("class","tooltip")
@@ -203,7 +204,7 @@
 		  //bind block's listener		
 			block_rec.on("mouseover",function(d,i){
 			    edge_highlight(i)
-			    rects.filter(function(data, inx) { return inx == i; }).attr("fill","yellow");
+			    rects.filter(function(data, inx) { return inx == i; }).attr("fill","grey");
 				var xScale_line =d3.scale.linear()
                                     .domain(d3.extent(est_obj.sorted_points[i],function(d){return d.x}))
                                     .range([0,chart_width-padding.left-padding.right])
@@ -268,7 +269,7 @@
 				   .transition()
 				   .duration(500)
 				   .attr("fill","steelblue");
-			   svg_block.selectAll(".yellow").remove()
+			   svg_block.selectAll(".grey").remove()
 			   svg.selectAll("line").remove()
 			   //omenu.style("display","none")
 			})
@@ -371,7 +372,7 @@
 					  .attr("fill","steelblue")        //?????????????CSS??
 					  .on("mouseover",function(d,i){
 						  d3.select(this)
-							.attr("fill","yellow");
+							.attr("fill","grey");
 						  edge_highlight(i)
 					    })
 					 .on("mouseout",function(d,i){
@@ -379,7 +380,7 @@
 							.transition()
 							.duration(500)
 							.attr("fill","steelblue");
-						  svg_block.selectAll("line").remove()
+						  svg_block.selectAll(".grey").remove()
 			              svg.selectAll("line").remove()
 						})
 						
