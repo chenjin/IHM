@@ -84,9 +84,9 @@ var estimate = function(cluster,data){
 	}
  }
  g[buckets-1] /= (matrixrow - data_cut[buckets-1])			 
- /*if(g[buckets-1]<0){
-	 g[buckets-1] = -g[buckets-1]
- }*/
+ if(g[buckets-1]<0){
+	 g[buckets-1] = 0
+ }
  avg_s /= data.length 
  console.log(avg_s)
  return {avg:avg_s,group:g,sorted_points:sorted_points}
