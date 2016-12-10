@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+
+	<!-- <package name="login" extends="struts-default">
+		<action name="LoginAction" class="NetworkInformation.DataIn.testAction" method="test">
+			<result name="success">/Acquaintance.jsp</result>
+			<result name="error">/Default.jsp</result>
+		</action>
+	</package>
+	-->
+	<constant name="struts.action.excludePattern" value=".*/js/.*?" />
+	<constant name="struts.action.excludePattern" value=".*/css/.*?" />
+	<package name="upload" extends="struts-default">
+	    <action name="uploadFile" class="BioInformation.DataIn.FileUploadAction">
+	        <interceptor-ref name="fileUpload">
+	            <param name="maximumSize">1000</param>
+	        </interceptor-ref>
+	        <interceptor-ref name="defaultStack"></interceptor-ref>
+	        <result name="success">/random_index_jc.jsp</result>
+	        <result name="error">/uploadError.jsp</result>
+	    </action>
+	</package>
+	<package name="data" extends="struts-default">
+		<action name="loadaction" class="NetworkInformation.DataIn.readData"
+			method="loadFile">
+			<result name="success">/Acquaintance.jsp</result>
+			<result name="error">/Default.jsp</result>
+		</action>
+		<action name="loadhome" class="NetworkInformation.DataIn.readData"
+			method="loadHome">
+			<result name="success">/HomeTown.jsp</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="loaddialect" class="NetworkInformation.DataIn.readData"
+			method="loadDialect">
+			<result name="success">/Language.jsp</result>
+			<result name="error">/Default.jsp</result>
+		</action>
+	</package>
+</struts>    
