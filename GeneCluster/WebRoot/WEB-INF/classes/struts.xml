@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
 <struts>
-
+     <!-- <package name="json-default" extends="struts-default">
+        <result-types>
+            <result-typename="json" class="org.apache.struts2.json.JSONResult">
+        </result-typename="json"></result-types>
+        <interceptors>  
+            <interceptorname="json"class="org.apache.struts2.json.jsoninterceptor">
+        </interceptorname="json"class="org.apache.struts2.json.jsoninterceptor"></interceptors>
+    </package>-->
 	<!-- <package name="login" extends="struts-default">
 		<action name="LoginAction" class="NetworkInformation.DataIn.testAction" method="test">
 			<result name="success">/Acquaintance.jsp</result>
@@ -14,7 +21,7 @@
 	<package name="upload" extends="struts-default">
 	    <action name="uploadFile" class="BioInformation.DataIn.FileUploadAction">
 	        <interceptor-ref name="fileUpload">
-	            <param name="maximumSize">1000</param>
+	            <param name="maximumSize">1000000</param>
 	        </interceptor-ref>
 	        <interceptor-ref name="defaultStack"></interceptor-ref>
 	        <result name="success">/random_index_jc.jsp</result>

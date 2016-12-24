@@ -58,7 +58,7 @@ public class GeneClusterReportClient{
 		    for (int k = 0; k<simpleGeneClusterRecords.length; k++)
 		    {
 		        sb.append(simpleGeneClusterRecords[k].getName()+"\tEnrichment Score: " + simpleGeneClusterRecords[k].getScore());
-			writeListRecords(simpleGeneClusterRecords[k].getListRecords(),sb);
+			    writeListRecords(simpleGeneClusterRecords[k].getListRecords(),sb);
 		    }
 		}
 		PrintWriter outfile = new PrintWriter(new FileOutputStream("geneClusterReport.txt"));

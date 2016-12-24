@@ -18,10 +18,11 @@
 <script language="javascript" type="text/javascript" src="js/bar.js"></script>
 <script language="javascript" type="text/javascript" src="js/highcharts.js"></script>
 <script language="javascript" type="text/javascript" src="js/exporting.js"></script>
-
+<link rel="stylesheet" href="css/pace-theme-center-circle.css"/>
+<script data-pace-options='{"ajax":true,"document":false,"eventLag":false}' type="text/javascript" src="js/pace.js"> </script>
 <script type="text/javascript">
 
-function draw(){
+	function draw(){
 		//alert(filename);
 		//window.location.href="loadaction?filename="+filename;
 		//清空person_id输入框避免再次保存

@@ -35,43 +35,49 @@
     </linearGradient>  
  </defs> 
  <script type="text/javascript">
-        var data = new Array()
+        var obj = ${data}
+        obj =eval('('+obj.clusterData+')')
+        //var data = new Array()
+        var data = obj.data
+        //console.log(data)
 		var array_data =[]
 		var a= d3.rgb(0,255,0)
 		var b= d3.rgb(255,0,0)
 		var compute = d3.interpolate(a,b)
-		var matrixrow = 200
-		var matrixcol = 15
+		//var matrixrow = 200
+		//var matrixcol = 15
+		var matrixrow = data.length
+		var matrixcol = data[0].length
+		console.log(matrixrow)
+		console.log(matrixcol)
 		for(var i=0;i<matrixrow;i++){
-		    data[i]= new Array();
+		    //data[i]= new Array();
 			for(var j=0;j<matrixcol;j++){
-			    data[i][j] = Math.floor(Math.random()*100)
+			    ///data[i][j] = Math.floor(Math.random()*2-1)
 				//temp = Math.floor(Math.random()*100)
 				array_data[i*matrixrow+j] =data[i][j]
 			}
 		}
 		var cur_rightblock =0//the block number mouse right clicked now
-		Pace.options={
-		    ajax:false,
-			document:false,
-			eventLag:false
-		}
+		
+		
 		var margin = { top: 0, right: 0, bottom: 0, left: 0 },
 		  heatmapwidth = 600,
 		  heatmapheight = 800,
 		  width = heatmapwidth + margin.left + margin.right,        // ????????????Heatmap???
 		  height = heatmapheight + margin.top + margin.bottom,
 		  chart_width = 300,
-		  gridSize = Math.floor(width / matrixcol),    // ???????????????width??24?
-		  gridSize_h = Math.floor(height / matrixrow),    // ???????????????width??24?
+		  gridSize = Math.floor(heatmapwidth / matrixcol),    // ???????????????width??24?
+		  gridSize_h = Math.floor(heatmapheight / matrixrow),    // ???????????????width??24?
 		  legendElementWidth = gridSize_h * 2,    // ????????????????}?
 		  buckets = 9,        // ??9?????
 		  //colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"]; 
 		  colors =["#00CC33","#00CC66","#3366FF","#000099","#FFFF33","#CCCC99","#FF9933","#FF6666","#FF3333"]
+		  console.log('gride_h:' +gridSize_h)
 		  var tooltip = d3.select("body")
-		 .append("div")
-		 .attr("class","tooltip")
-		 .style("opacity",0.0)
+							 .append("div")
+							 .attr("class","tooltip")
+							 .style("opacity",0.0)
 		  var linear = d3.scale.linear()
 		    .domain([d3.min(array_data),d3.max(array_data)])
 			.range([0,1])
@@ -85,6 +91,7 @@
 			 .attr("height",height)
 			 .append("g")//?svg?????g???????g??????
 			 .attr("transform","translate("+margin.left+","+margin.top+")")
+		  var date1 = new Date()
 		  
 		  var heatMap =svg.selectAll(".score")
 		    .data(array_data)
@@ -99,7 +106,9 @@
 			.attr("width",gridSize)
 			.attr("height",gridSize_h)
 			.style("fill","#FFFFFF")
-			
+		  var date2 = new Date()
+	     var duration = date2.getTime() -date1.getTime()
+	     console.log("duration"+duration)
 		 var tooltip = d3.select("body")
 		 .append("div")
 		 .attr("class","tooltip")
@@ -116,7 +125,6 @@
 			 .style("opacity",1.0)
 		  })*/
 		  
-		 
 		  var svg_block =d3.select("#chart").append("svg")
 			 .attr("width", 50)
 			 .attr("height",height)
@@ -161,9 +169,6 @@
 			     } 
 			 }
 		  }
-		  /*for(var i =0;i < data.length;i++){
-		     console.log(cluster[i])
-		  }*/
 		 
 		  var est_obj = estimate(cluster,data)
 		  
@@ -294,7 +299,6 @@
 					   },
 					   //fastMode:true,
 					   complete:function(results){
-						   console.log("Finished:",results.data)
 						   result = results.data 
 					   }
 			   })
