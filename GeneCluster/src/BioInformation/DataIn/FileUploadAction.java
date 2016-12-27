@@ -15,6 +15,7 @@ import org.codehaus.jettison.json.JSONObject;
 import com.opensymphony.xwork2.Action;
 
 import BioInformation.DataTransfer.ClusteredData;
+import BioInformation.Util.DataTransform;
 import sun.rmi.runtime.Log;
 import weka.clusterers.ClusterEvaluation;
 import weka.clusterers.SimpleKMeans;
@@ -64,10 +65,12 @@ public class FileUploadAction implements Action {
 	public void setUploadContentType(String uploadContentType) {
 		this.uploadContentType = uploadContentType;
 	}
-	
+	public Instances gridSampling(Instances instances){
+		return instances;
+	}
 	@Override
 	public String execute()  {
-		PrincipalComponents pc =new PrincipalComponents();
+		
 		String savePath = ServletActionContext.getServletContext().getRealPath("/upload/"+this.uploadFileName);
 		//logger.info(savePath);
 		//logger.info(FileUploadAction.class.getName());
@@ -77,7 +80,7 @@ public class FileUploadAction implements Action {
 		    	long averageTime = 0;
 		    	long squareTime = 0;
 		    	long squareAverageTime =0;
-		    	logger.error("k="+k +",sampleRate:"+sampleRates[s]);
+		    	//logger.error("k="+k +",sampleRate:"+sampleRates[s]);
 		    	for(int t =0;t < 10;t++){//iteration for each test case
 					long startMili=System.currentTimeMillis();// current time
 			
@@ -85,58 +88,36 @@ public class FileUploadAction implements Action {
 					Instances data =null;
 					SimpleKMeans km =new SimpleKMeans();
 					try {
-						km.setNumClusters(k);
 						loader.setSource(upload);
 						data =loader.getDataSet();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					String[] options ={"-S","1","-Z",String.valueOf(sampleRates[s])};//get -Z% percent of all genes.
-					Resample convert =new Resample();
-					try{
-						
-						convert.setOptions(options);
-						convert.setInputFormat(data);
-						//logger.error("before sampling:"+numericInstances.numInstances());
-						data =Filter.useFilter(data, convert);
-						//logger.error("after sampling:"+numericInstances.numInstances());
-						Instances numericInstances = new Instances(data);
-					    numericInstances.deleteAttributeAt(0);//remove gene name
-					    
-						km.buildClusterer(numericInstances);
-						ClusterEvaluation eval =new ClusterEvaluation();
-						eval.setClusterer(km);	
-						eval.evaluateClusterer(numericInstances);
-						double[] cnum = eval.getClusterAssignments();
-						JSONObject jsonObject =new JSONObject();
-						String []geneNames = new String[data.numInstances()];
-						int attributeNum =data.instance(0).numAttributes();
-						double [][]geneData =new double[data.numInstances()][attributeNum];
-						for(int i=0;i<data.numInstances();i++){
-							geneNames[i] = "\""+data.instance(i).stringValue(0)+"\"";
-							for(int j=1;j<attributeNum;j++){
-								geneData[i][j] = data.instance(i).value(j);
-							}
-						}
-						//transfer the data to front view
-						ClusteredData clusterData =new ClusteredData();
-						clusterData.setName("cluster-name");
-						clusterData.setGeneNames(geneNames);
-						clusterData.setData(geneData);
-						jsonObject.accumulate("clusterData", clusterData);
-						ServletActionContext.getRequest().setAttribute("data", jsonObject);
-						
-						long endMili=System.currentTimeMillis();
-						averageTime += (endMili-startMili);
-						squareAverageTime += (endMili-startMili)*(endMili-startMili);
-					} catch (Exception e1) {
+					}catch(Exception e1) {
 						e1.printStackTrace();
 						return ERROR;
 					}
+					logger.error("Before resample:"+data.numInstances());
+					data = DataTransform.resampling(data, sampleRates[s]);
+			        logger.error("After resample:"+data.numInstances());
+					Instances numericInstances = new Instances(data);
+					numericInstances.deleteAttributeAt(0);//remove gene name
+					logger.error("Before PC:"+numericInstances.numAttributes());
+					//reduce the number of attribute to 2 
+					numericInstances =DataTransform.pca(numericInstances);
+				    logger.error("After PC:"+numericInstances.numAttributes());
+					
+					ClusterEvaluation eval =DataTransform.cluster(numericInstances,k);
+					double[] cnum = eval.getClusterAssignments();//find out each data belongs to which cluster
+					
+					JSONObject jsonObject =DataTransform.showBack(data);
+					ServletActionContext.getRequest().setAttribute("data", jsonObject);
+					
+					long endMili=System.currentTimeMillis();
+					averageTime += (endMili-startMili);
+					squareAverageTime += (endMili-startMili)*(endMili-startMili);
+					
 		    	}
 		    	averageTime /= 10;
 		    	squareTime = squareAverageTime/10 - (averageTime * averageTime);
-		    	logger.error("Total time cost:"+averageTime+"ms"+" Square is:"+squareAverageTime);
+		    	//logger.error("Total time cost:"+averageTime+"ms"+" Square is:"+squareTime);
 		    }
 		}
 		//new GeneClusterReportClient().invokeService();
