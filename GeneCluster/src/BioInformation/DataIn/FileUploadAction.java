@@ -1,31 +1,20 @@
 package BioInformation.DataIn;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
-import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 import com.opensymphony.xwork2.Action;
 
-import BioInformation.DataTransfer.ClusteredData;
 import BioInformation.Util.DataTransform;
-import sun.rmi.runtime.Log;
 import weka.clusterers.ClusterEvaluation;
 import weka.clusterers.SimpleKMeans;
 import weka.core.Instances;
 import weka.core.converters.CSVLoader;
-import weka.filters.Filter;
-import weka.filters.unsupervised.attribute.NominalToString;
-import weka.filters.unsupervised.attribute.PrincipalComponents;
-import weka.filters.unsupervised.attribute.StringToNominal;
-import weka.filters.unsupervised.instance.Resample;
 
 public class FileUploadAction implements Action {
 	static Logger logger =Logger.getLogger("error");
@@ -68,7 +57,7 @@ public class FileUploadAction implements Action {
 	public Instances gridSampling(Instances instances){
 		return instances;
 	}
-	@Override
+	/*@Override//聚类时间统计
 	public String execute()  {
 		
 		String savePath = ServletActionContext.getServletContext().getRealPath("/upload/"+this.uploadFileName);
@@ -80,7 +69,7 @@ public class FileUploadAction implements Action {
 		    	long averageTime = 0;
 		    	long squareTime = 0;
 		    	long squareAverageTime =0;
-		    	//logger.error("k="+k +",sampleRate:"+sampleRates[s]);
+		    	logger.error("k="+k +",sampleRate:"+sampleRates[s]);
 		    	for(int t =0;t < 10;t++){//iteration for each test case
 					long startMili=System.currentTimeMillis();// current time
 			
@@ -94,21 +83,18 @@ public class FileUploadAction implements Action {
 						e1.printStackTrace();
 						return ERROR;
 					}
-					logger.error("Before resample:"+data.numInstances());
+				    //logger.error("Before resample:"+data.numInstances());
 					data = DataTransform.resampling(data, sampleRates[s]);
-			        logger.error("After resample:"+data.numInstances());
+			        //logger.error("After resample:"+data.numInstances());
 					Instances numericInstances = new Instances(data);
 					numericInstances.deleteAttributeAt(0);//remove gene name
-					logger.error("Before PC:"+numericInstances.numAttributes());
+					//logger.error("Before PC:"+numericInstances.numAttributes());
 					//reduce the number of attribute to 2 
 					numericInstances =DataTransform.pca(numericInstances);
-				    logger.error("After PC:"+numericInstances.numAttributes());
+				    //logger.error("After PC:"+numericInstances.numAttributes());
 					
 					ClusterEvaluation eval =DataTransform.cluster(numericInstances,k);
 					double[] cnum = eval.getClusterAssignments();//find out each data belongs to which cluster
-					
-					JSONObject jsonObject =DataTransform.showBack(data);
-					ServletActionContext.getRequest().setAttribute("data", jsonObject);
 					
 					long endMili=System.currentTimeMillis();
 					averageTime += (endMili-startMili);
@@ -117,11 +103,58 @@ public class FileUploadAction implements Action {
 		    	}
 		    	averageTime /= 10;
 		    	squareTime = squareAverageTime/10 - (averageTime * averageTime);
-		    	//logger.error("Total time cost:"+averageTime+"ms"+" Square is:"+squareTime);
+		    	logger.error("Total time cost:"+averageTime+"ms"+" Square is:"+squareTime);
 		    }
 		}
+		//JSONObject jsonObject =DataTransform.showBack(data);
+		//ServletActionContext.getRequest().setAttribute("data", jsonObject);
+		//new GeneClusterReportClient().invokeService();
+		return SUCCESS;
+	}*/
+	
+	@Override
+	public String execute()  {
+		String savePath = ServletActionContext.getServletContext().getRealPath("/upload/"+this.uploadFileName);
+		//logger.info(savePath);
+		//logger.info(FileUploadAction.class.getName());	    	
+    	//logger.error("k="+k +",sampleRate:"+sampleRates[s]);
+	
+		CSVLoader loader =new CSVLoader();
+		Instances data =null;
+		SimpleKMeans km =new SimpleKMeans();
+		try {
+			loader.setSource(upload);
+			data =loader.getDataSet();
+		}catch(Exception e1) {
+			e1.printStackTrace();
+			return ERROR;
+		}
+        int k = 10;
+		data = DataTransform.resampling(data, 25);
+        
+		Instances numericInstances = new Instances(data);
+		numericInstances.deleteAttributeAt(0);//remove gene name
+		//logger.error("Before PC:"+numericInstances.numAttributes());
+		//reduce the number of attribute to 2 
+		//numericInstances =DataTransform.pca(numericInstances);
+	    //logger.error("After PC:"+numericInstances.numAttributes());
+		
+		ClusterEvaluation eval =DataTransform.cluster(numericInstances,k);
+		double[] cnum = eval.getClusterAssignments();//find out each data belongs to which cluster
+		
+	    Set<Integer>[]dataSets = new HashSet[k];
+	    for(int i=0;i<k;i++){
+	    	dataSets[i] = new HashSet<Integer>();
+	    }
+	    for(int i=0;i<data.numInstances();i++){
+	    	dataSets[(int)cnum[i]].add(i);
+	    }
+	    
+	  
+		JSONObject jsonObject =DataTransform.showBack(data,dataSets);
+		ServletActionContext.getRequest().setAttribute("data", jsonObject);
+	    	
 		//new GeneClusterReportClient().invokeService();
 		return SUCCESS;
 	}
-    
 }

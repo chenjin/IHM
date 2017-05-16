@@ -12,6 +12,7 @@
     <script type="text/javascript" src="js/d3.v3.min.js"> </script>
 	<script type="text/javascript" src="js/math.min.js"> </script>
 	<script type="text/javascript" src="js/estimate.js"> </script>
+	<script type="text/javascript" src="js/cutnames.js"> </script>
 	<script type="text/javascript" src="js/highlight.js"> </script>
 	<script type="text/javascript" src="js/ajax.js"> </script>
 	<script type="text/javascript" src="js/papaparse.min.js"> </script>
@@ -39,7 +40,7 @@
         obj =eval('('+obj.clusterData+')')
         //var data = new Array()
         var data = obj.data
-        //console.log(data)
+        var names = obj.geneNames
 		var array_data =[]
 		var a= d3.rgb(0,255,0)
 		var b= d3.rgb(255,0,0)
@@ -48,8 +49,6 @@
 		//var matrixcol = 15
 		var matrixrow = data.length
 		var matrixcol = data[0].length
-		console.log(matrixrow)
-		console.log(matrixcol)
 		for(var i=0;i<matrixrow;i++){
 		    //data[i]= new Array();
 			for(var j=0;j<matrixcol;j++){
@@ -70,10 +69,67 @@
 		  gridSize = Math.floor(heatmapwidth / matrixcol),    // ???????????????width??24?
 		  gridSize_h = Math.floor(heatmapheight / matrixrow),    // ???????????????width??24?
 		  legendElementWidth = gridSize_h * 2,    // ????????????????}?
-		  buckets = 9,        // ??9?????
-		  //colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"]; 
+		  buckets = obj.dataCut.length,        // ??9?????
+		  //colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"];
 		  colors =["#00CC33","#00CC66","#3366FF","#000099","#FFFF33","#CCCC99","#FF9933","#FF6666","#FF3333"]
-		  console.log('gride_h:' +gridSize_h)
+		  
+		  //get k non-duplicate random numbers
+          /*var origin = new Array;
+		  for(var i=0;i<heatmapheight;i++){
+		      origin[i] = i+1
+		  }
+		  origin.sort(function(){//shuffle
+			return 0.5 - Math.random() 
+		  })
+		  var cut = origin.slice(0,buckets)
+	      var data_cut = new Array(buckets)
+		  cut = cut.sort(function(a,b){
+		    return a-b
+		  })
+		  for(var i=buckets-1;i>0;i--){
+		    cut[i] = cut[i-1]
+			data_cut[i] = Math.floor(cut[i] * matrixrow / heatmapheight)//change from pixel_height scale to data_size scale
+		  }*/
+		  //Below will be changed
+		  /*var origin = new Array;
+		  for(var i=0;i<matrixrow;i++){
+			  origin[i] = i+1
+		  }
+		  origin.sort(function(){
+			  return 0.5 - Math.random()
+		  })
+		  var data_cut = origin.slice(0,buckets)
+		  data_cut = data_cut.sort(function(a,b){
+			  return a-b
+		  })*/
+		  //Above will be changed,data_cut will be real
+		  var data_cut = obj.dataCut
+		  var cut = new Array(buckets)
+		  for(var i =buckets-1;i>0;i--){
+			  data_cut[i] = data_cut[i-1]
+			  cut[i] = Math.floor(data_cut[i]* heatmapheight /matrixrow)
+		  }
+          
+		  data_cut[0] =0 		  
+ 		  cut[0] =0
+		  var cluster =new Array(data.length)
+		  var row =0,inx = 0
+		  while(row < data.length){
+		     for(row=data_cut[inx];row<data_cut[inx+1];row++){
+			     cluster[row] =inx
+			 }
+			 if(inx+1 < buckets -1){
+			     inx++
+			 }else{
+			     for(row = data_cut[buckets-1];row < data.length;row++){
+			         cluster[row] =buckets-1
+			     } 
+			 }
+		  }
+		  var est_obj = estimate(cluster,data)
+		  var grouped_names = cutnames(data_cut,names,est_obj.group)
+		  
+		  
 		  var tooltip = d3.select("body")
 							 .append("div")
 							 .attr("class","tooltip")
@@ -85,7 +141,7 @@
 			.domain([d3.min(array_data),buckets-1,d3.max(array_data)])//???[0,n,?????]
 			.range(colors)*///??
 		  //??chart??svg
-		  
+		 
 		  var svg =d3.select("#chart").append("svg")
 			 .attr("width",width)
 			 .attr("height",height)
@@ -106,7 +162,7 @@
 			.attr("width",gridSize)
 			.attr("height",gridSize_h)
 			.style("fill","#FFFFFF")
-		  var date2 = new Date()
+		 var date2 = new Date()
 	     var duration = date2.getTime() -date1.getTime()
 	     console.log("duration"+duration)
 		 var tooltip = d3.select("body")
@@ -131,47 +187,7 @@
 			 .append("g")//?svg?????g???????g??????
 			 .attr("transform","translate("+(margin.left+20)+","+0+")")
 			  
-          //get k non-duplicate random numbers
-          var origin = new Array;
-		  for(var i=0;i<height;i++){
-		      origin[i] = i+1
-		  }
-		  origin.sort(function(){
-			return 0.5 - Math.random() 
-		  })
-		  var cut = origin.slice(0,buckets)
-	      var data_cut = new Array(buckets)
-		  cut = cut.sort(function(a,b){
-		    return a-b
-		  })
-	      
-		  for(var i=buckets-1;i>0;i--){
-		    cut[i] = cut[i-1]
-			data_cut[i] = Math.floor(cut[i] * matrixrow / heatmapheight)//change from pixel_height scale to data_size scale
-		  }
-		  
-          data_cut[0] =0 		  
- 		  cut[0] =0
-		  /*for(var i=0;i<cut.length;i++){
-		     console.log(Math.floor(cut[i]*matrixrow/heatmapheight))
-		  }*/
-		  var cluster =new Array(data.length)
-		  var row =0,inx = 0
-		  while(row < data.length){
-		     for(row=data_cut[inx];row<data_cut[inx+1];row++){
-			     cluster[row] =inx
-			 }
-			 if(inx+1 < buckets -1){
-			     inx++
-			 }else{
-			     for(row = data_cut[buckets-1];row < data.length;row++){
-			         cluster[row] =buckets-1
-			     } 
-			 }
-		  }
-		 
-		  var est_obj = estimate(cluster,data)
-		  
+         
 		  var omenu=d3.select("#menu")
           .style("display","none")
 		  .on("mouseout",function(d,i){
@@ -284,8 +300,8 @@
 			   //omenu.style("display","none")
 			})
 			.on("click",function(d,i){
-			   console.log("click")
-			   var url = "http://biit.cs.ut.ee/gprofiler/index.cgi?organism=scerevisiae&query=swi4+swi6+mbp1+mcm1+fkh1+fkh2+ndd1+swi5+ace2&r_chr=X&r_start=start&r_end=end&analytical=1&domain_size_type=annotated&term=&significant=1&sort_by_structure=1&user_thr=1.00&output=mini&prefix=ENTREZGENE_ACC"
+			   
+			   /*var url = "http://biit.cs.ut.ee/gprofiler/index.cgi?organism=scerevisiae&query=swi4+swi6+mbp1+mcm1+fkh1+fkh2+ndd1+swi5+ace2&r_chr=X&r_start=start&r_end=end&analytical=1&domain_size_type=annotated&term=&significant=1&sort_by_structure=1&user_thr=1.00&output=mini&prefix=ENTREZGENE_ACC"
 			   var result;
 			   getAJAX(function(data){
 				   Papa.parse(data,{
@@ -302,11 +318,15 @@
 						   result = results.data 
 					   }
 			   })
-			   },url)						   
-			   /*tooltip.html(result)
+			   },url)*/		
+		
+			   var genes =grouped_names[i].join(",")
+			  
+			   tooltip.html(genes)
 				 .style("left",(d3.event.pageX) +"px")
 				 .style("top",(d3.event.pageY)+"px")
-				 .style("opacity",1.0)*/
+				 .style("width",(genes.length*8)+"px")
+				 .style("opacity",1.0)
 			   
 			})
 			.on("contextmenu", function(data, index) {
@@ -353,7 +373,8 @@
                        .domain(d3.range(est_obj.group.length))
                        .rangeRoundBands([0,chart_width-padding.left-padding.right])
          var yScale =d3.scale.linear()
-                       .domain([d3.min(est_obj.group),d3.max(est_obj.group)])
+                       //.domain([d3.min(est_obj.group),d3.max(est_obj.group)])
+                       .domain([0,d3.max(est_obj.group)])
                        .range([height-padding.top-padding.bottom,0])					   
 	     var xAxis =d3.svg.axis()
                       .scale(xScale)
@@ -362,6 +383,7 @@
                       .scale(yScale)
                       .orient("left")
 		 var rectPadding =4
+
 		 var rects = svg_chart.selectAll(".MyRect")
 		              .data(est_obj.group)
 					  .enter()

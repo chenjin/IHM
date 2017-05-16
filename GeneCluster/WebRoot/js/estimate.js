@@ -8,6 +8,7 @@ var estimate = function(cluster,data){
  for(var i=0;i<buckets;i++){
 	 centers[i] = math.zeros(data[0].length)
  }
+ console.log("g:"+g.length)
  avg_s =0
  for(var row=0; row< data.length; row++){
 	a[row]=0
@@ -70,10 +71,10 @@ var estimate = function(cluster,data){
 	    //return [index,item[0],item[1]]//the third element is distance to center
 		return {x:index,orginx:item[0],y:item[1]}
 	})
-	for(var j=0;j< sorted_points[i].length;j++){
+	//for(var j=0;j< sorted_points[i].length;j++){
 		//console.log(sorted_points[i][j][0]+' '+sorted_points[i][j][1]+' '+sorted_points[i][j][2])
 		//console.log(sorted_points[i][j].x+' '+sorted_points[i][j].orginx+' '+sorted_points[i][j].y)
-	}
+	//}
 	console.log("")
  }
  

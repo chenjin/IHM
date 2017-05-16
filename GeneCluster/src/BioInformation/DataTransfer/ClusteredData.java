@@ -6,6 +6,7 @@ public class ClusteredData {
     private String name;
     private double[][] data;
     private String[] geneNames;
+    private int[] dataCut;
 	public String getName() {
 		return name;
 	}
@@ -24,6 +25,13 @@ public class ClusteredData {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	public int[] getDataCut() {
+		return dataCut;
+	}
+	public void setDataCut(int[] dataCut) {
+		this.dataCut = dataCut;
+	}
 	public static void main(String[] args) {
 		
 	}
@@ -36,7 +44,7 @@ public class ClusteredData {
 		}
 		geneData.deleteCharAt(geneData.length()-1);
 		return "{\"data\":[" + geneData.toString() + "],\"geneNames\":"
-				+ Arrays.toString(geneNames) + "}";
+				+ Arrays.toString(geneNames) +",\"dataCut\":"+Arrays.toString(dataCut)+ "}";
 	}
 	
 }
